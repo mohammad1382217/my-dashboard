@@ -24,7 +24,7 @@ const sizeClasses: Record<SelectSize, string> = {
 }
 
 const base =
-  'w-full appearance-none rounded-md border bg-white text-slate-900 outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-100'
+  'w-full appearance-none rounded-md border bg-white text-slate-900 shadow-sm outline-none transition-[color,border-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-100'
 
 /**
  * Native <select> with optional label, helper text, error state and a custom
@@ -51,7 +51,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
 
   const stateClasses = hasError
     ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/30'
-    : 'border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:focus:border-indigo-400'
+    : 'border-slate-300 hover:border-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:hover:border-zinc-600 dark:focus:border-indigo-400'
 
   // `pe-9` (logical padding-inline-end) after the size classes guarantees room for the chevron on
   // whichever side is the end — right in LTR, left in RTL.

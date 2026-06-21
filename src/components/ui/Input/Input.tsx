@@ -26,7 +26,7 @@ const sizeClasses: Record<InputSize, string> = {
 }
 
 const base =
-  'w-full rounded-md border bg-white text-slate-900 placeholder:text-slate-400 outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500'
+  'w-full rounded-md border bg-white text-slate-900 shadow-sm placeholder:text-slate-400 outline-none transition-[color,border-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500'
 
 /**
  * Native <input> with optional label, helper text, error state and icons.
@@ -68,7 +68,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
   const stateClasses = hasError
     ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/30'
-    : 'border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:focus:border-indigo-400'
+    : 'border-slate-300 hover:border-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:hover:border-zinc-600 dark:focus:border-indigo-400'
 
   const inputClassName = twMerge(
     base,

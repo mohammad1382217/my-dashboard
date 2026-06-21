@@ -3,10 +3,42 @@
 /* Manual, class-based dark mode: `dark:` utilities apply under an ancestor `.dark`. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Estedad (استعداد) — self-hosted from /public/fonts/estedad. The `arabic` subset
+   carries the Persian/Arabic glyphs; `latin` covers ASCII. `font-display: swap`
+   shows the fallback immediately, then swaps Estedad in once it loads. */
+@font-face {
+  font-family: 'Estedad';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/estedad/arabic-400.woff2') format('woff2'), url('/fonts/estedad/latin-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Estedad';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/estedad/arabic-500.woff2') format('woff2'), url('/fonts/estedad/latin-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Estedad';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/estedad/arabic-600.woff2') format('woff2'), url('/fonts/estedad/latin-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Estedad';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/estedad/arabic-700.woff2') format('woff2'), url('/fonts/estedad/latin-700.woff2') format('woff2');
+}
+
 /* Persian-friendly font stack. Plain rule (outside @layer) so it still applies on
    the old-browser floor where Tailwind's @layer base can be dropped. */
 html {
-  font-family: 'Vazirmatn', 'Vazir', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  font-family: 'Estedad', 'Vazirmatn', 'Vazir', 'Segoe UI', Tahoma, system-ui, sans-serif;
 }
 
 /* Click ripple used by <Button>. Plain CSS (outside @layer) so it degrades

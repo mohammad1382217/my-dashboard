@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { useLang } from '../i18n'
 import type { Lang } from '../i18n'
@@ -96,6 +96,13 @@ const STYLE_LABELS: Record<string, Record<Lang, string>> = {
   opacity: { fa: 'شفافیت', en: 'Opacity' },
 }
 
+const STYLE_GROUPS: Record<string, Record<Lang, string>> = {
+  colors: { fa: 'رنگ‌ها', en: 'Colors' },
+  layout: { fa: 'ابعاد و فاصله', en: 'Sizing & spacing' },
+  type: { fa: 'تایپوگرافی', en: 'Typography' },
+  effects: { fa: 'افکت‌ها', en: 'Effects' },
+}
+
 function useTheme(): readonly [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'light'
@@ -114,76 +121,118 @@ function useTheme(): readonly [Theme, () => void] {
   return [theme, toggle] as const
 }
 
+/** A red diagonal slash on white — the universal "no colour / transparent" affordance. */
+const NONE_SWATCH: CSSProperties = {
+  backgroundColor: '#fff',
+  backgroundImage: 'linear-gradient(to top right, transparent calc(50% - 1px), #ef4444, transparent calc(50% + 1px))',
+}
+
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const isNone = !value
+  const swatchRing = 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-white dark:ring-offset-zinc-900'
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">{label}</span>
-        <span className="font-mono text-[11px] text-zinc-400">{value || 'none'}</span>
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-black/5 bg-white/60 py-0.5 ps-1 pe-1.5 dark:border-white/10 dark:bg-white/5">
+          <span className="size-3.5 rounded-[4px] border border-black/10 dark:border-white/20" style={isNone ? NONE_SWATCH : { backgroundColor: value }} />
+          <span className="font-mono text-[10px] uppercase text-zinc-400">{value || 'none'}</span>
+        </span>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {PALETTE.map((swatch) => (
-          <button
-            key={swatch}
-            type="button"
-            title={swatch}
-            onClick={() => onChange(swatch)}
-            style={{ backgroundColor: swatch }}
-            className={twMerge(
-              'size-5 rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/15',
-              value.toLowerCase() === swatch.toLowerCase() && 'ring-2 ring-indigo-500',
-            )}
-          />
-        ))}
+        {PALETTE.map((swatch) => {
+          const selected = value.toLowerCase() === swatch.toLowerCase()
+          return (
+            <button
+              key={swatch}
+              type="button"
+              title={swatch}
+              onClick={() => onChange(swatch)}
+              style={{ backgroundColor: swatch }}
+              className={twMerge('grid size-6 place-items-center rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/15', selected && swatchRing)}
+            >
+              {selected ? <Icon name="check" size={12} className="text-white mix-blend-difference" /> : null}
+            </button>
+          )
+        })}
         <button
           type="button"
           title="none"
+          aria-label="none"
           onClick={() => onChange('')}
-          className="grid size-5 place-items-center rounded-md border border-black/10 text-[10px] text-zinc-400"
-        >
-          ✕
-        </button>
-        <input
-          type="color"
-          aria-label="custom color"
-          value={value || '#000000'}
-          onChange={(e) => onChange(e.target.value)}
-          className="size-5 cursor-pointer rounded-md border border-black/10 p-0"
+          style={NONE_SWATCH}
+          className={twMerge('size-6 rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/15', isNone && swatchRing)}
         />
+        <label
+          title="custom"
+          className="relative grid size-6 cursor-pointer place-items-center overflow-hidden rounded-md border border-black/10 bg-[conic-gradient(from_0deg,#ef4444,#eab308,#22c55e,#06b6d4,#6366f1,#d946ef,#ef4444)] transition-transform hover:scale-110 dark:border-white/15"
+        >
+          <span className="grid size-3.5 place-items-center rounded-full bg-white/90 text-[11px] font-bold leading-none text-zinc-700 shadow-sm">+</span>
+          <input
+            type="color"
+            aria-label="custom color"
+            value={value || '#000000'}
+            onChange={(e) => onChange(e.target.value)}
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+        </label>
       </div>
+    </div>
+  )
+}
+
+/** A titled cluster of inspector fields. */
+function StyleGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{title}</span>
+      {children}
     </div>
   )
 }
 
 function StylePanel({ style, setStyle, lang }: { style: StyleState; setStyle: (updater: (prev: StyleState) => StyleState) => void; lang: Lang }) {
   const L = (key: keyof typeof STYLE_LABELS) => STYLE_LABELS[key][lang]
+  const G = (key: keyof typeof STYLE_GROUPS) => STYLE_GROUPS[key][lang]
   const set = (patch: Partial<StyleState>) => setStyle((prev) => ({ ...prev, ...patch }))
 
   return (
-    <div className="flex flex-col gap-4">
-      <ColorField label={L('background')} value={style.background} onChange={(v) => set({ background: v })} />
-      <ColorField label={L('color')} value={style.color} onChange={(v) => set({ color: v })} />
-      <ColorField label={L('borderColor')} value={style.borderColor} onChange={(v) => set({ borderColor: v })} />
-      <Slider label={L('borderWidth')} showValue min={0} max={8} step={1} value={style.borderWidth} onChange={(e) => set({ borderWidth: Number(e.target.value) })} />
-      <Slider label={L('radius')} showValue min={0} max={40} step={1} value={style.radius} onChange={(e) => set({ radius: Number(e.target.value) })} />
-      <Slider label={L('paddingX')} showValue min={0} max={64} step={1} value={style.paddingX} onChange={(e) => set({ paddingX: Number(e.target.value) })} />
-      <Slider label={L('paddingY')} showValue min={0} max={64} step={1} value={style.paddingY} onChange={(e) => set({ paddingY: Number(e.target.value) })} />
-      <Slider label={L('fontSize')} showValue min={0} max={36} step={1} value={style.fontSize} onChange={(e) => set({ fontSize: Number(e.target.value) })} />
-      <Select label={L('fontWeight')} value={style.fontWeight} onChange={(e) => set({ fontWeight: e.target.value })}>
-        <option value="">—</option>
-        <option value="400">400</option>
-        <option value="500">500</option>
-        <option value="600">600</option>
-        <option value="700">700</option>
-      </Select>
-      <Select label={L('shadow')} value={style.shadow} onChange={(e) => set({ shadow: e.target.value })}>
-        <option value="">none</option>
-        <option value="sm">sm</option>
-        <option value="md">md</option>
-        <option value="lg">lg</option>
-        <option value="xl">xl</option>
-      </Select>
-      <Slider label={L('opacity')} showValue min={0} max={100} step={1} value={style.opacity} onChange={(e) => set({ opacity: Number(e.target.value) })} />
+    <div className="flex flex-col gap-5">
+      <StyleGroup title={G('colors')}>
+        <ColorField label={L('background')} value={style.background} onChange={(v) => set({ background: v })} />
+        <ColorField label={L('color')} value={style.color} onChange={(v) => set({ color: v })} />
+        <ColorField label={L('borderColor')} value={style.borderColor} onChange={(v) => set({ borderColor: v })} />
+      </StyleGroup>
+
+      <StyleGroup title={G('layout')}>
+        <Slider label={L('borderWidth')} showValue min={0} max={8} step={1} value={style.borderWidth} onChange={(e) => set({ borderWidth: Number(e.target.value) })} />
+        <Slider label={L('radius')} showValue min={0} max={40} step={1} value={style.radius} onChange={(e) => set({ radius: Number(e.target.value) })} />
+        <Slider label={L('paddingX')} showValue min={0} max={64} step={1} value={style.paddingX} onChange={(e) => set({ paddingX: Number(e.target.value) })} />
+        <Slider label={L('paddingY')} showValue min={0} max={64} step={1} value={style.paddingY} onChange={(e) => set({ paddingY: Number(e.target.value) })} />
+      </StyleGroup>
+
+      <StyleGroup title={G('type')}>
+        <Slider label={L('fontSize')} showValue min={0} max={36} step={1} value={style.fontSize} onChange={(e) => set({ fontSize: Number(e.target.value) })} />
+        <Select label={L('fontWeight')} value={style.fontWeight} onChange={(e) => set({ fontWeight: e.target.value })}>
+          <option value="">—</option>
+          <option value="400">400</option>
+          <option value="500">500</option>
+          <option value="600">600</option>
+          <option value="700">700</option>
+        </Select>
+      </StyleGroup>
+
+      <StyleGroup title={G('effects')}>
+        <Select label={L('shadow')} value={style.shadow} onChange={(e) => set({ shadow: e.target.value })}>
+          <option value="">none</option>
+          <option value="sm">sm</option>
+          <option value="md">md</option>
+          <option value="lg">lg</option>
+          <option value="xl">xl</option>
+        </Select>
+        <Slider label={L('opacity')} showValue min={0} max={100} step={1} value={style.opacity} onChange={(e) => set({ opacity: Number(e.target.value) })} />
+      </StyleGroup>
     </div>
   )
 }
@@ -441,12 +490,24 @@ function BuilderView({ lang }: { lang: Lang }) {
   const cssStyle = buildStyle(style)
   const cls = buildClass(style)
   const preview = builder.render(values, cssStyle)
+  // Remount the preview when prop values change so uncontrolled props (defaultChecked,
+  // defaultPressed, defaultValue, indeterminate…) re-apply — otherwise toggling them in
+  // the inspector silently no-ops, since React only reads `default*` props at mount.
+  const previewKey = `${builder.id}:${JSON.stringify(values)}`
   const code = builder.toCode ? builder.toCode(values, cls) : genCode(builder.code, builder.controls, values, cls)
   const setValue = (prop: string, value: unknown) => setValues((prev) => ({ ...prev, [prop]: value }))
 
+  /** A friendly, localized name for a builder (falls back to its component code). */
+  const nameFor = (b: (typeof BUILDERS)[number]) => COMPONENTS.find((c) => c.id === b.id)?.name[lang] ?? b.code
+
   const filteredBuilders = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return q ? BUILDERS.filter((b) => b.code.toLowerCase().includes(q)) : BUILDERS
+    if (!q) return BUILDERS
+    const raw = query.trim()
+    return BUILDERS.filter((b) => {
+      const entry = COMPONENTS.find((c) => c.id === b.id)
+      return b.code.toLowerCase().includes(q) || (entry ? entry.name.en.toLowerCase().includes(q) || entry.name.fa.includes(raw) : false)
+    })
   }, [query])
 
   function selectBuilder(i: number) {
@@ -456,59 +517,86 @@ function BuilderView({ lang }: { lang: Lang }) {
     setTab(BUILDERS[i].controls.length > 0 ? 'props' : 'style')
   }
 
+  function reset() {
+    setValues(defaultValues(builder))
+    setStyle(DEFAULT_STYLE)
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-2xl font-bold">{t.builderTitle}</h2>
-        <p className="mt-1 text-sm text-zinc-500">{t.builderSub}</p>
+        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">{t.builderTitle}</h2>
+        <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">{t.builderSub}</p>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Input startIcon={<Icon name="search" size={16} />} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t.search} />
-        <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto rounded-xl border border-white/60 bg-white/40 p-2 dark:border-white/10 dark:bg-white/5">
-          {filteredBuilders.length === 0 ? (
-            <p className="w-full p-3 text-center text-sm text-zinc-400">{t.noResults}</p>
-          ) : (
-            filteredBuilders.map((b) => {
-              const i = BUILDERS.indexOf(b)
-              return (
-                <button
-                  key={b.id}
-                  type="button"
-                  onClick={() => selectBuilder(i)}
-                  aria-current={i === activeIdx ? 'true' : undefined}
-                  className={twMerge(
-                    'rounded-lg border px-2.5 py-1 font-mono text-xs font-medium transition-colors',
-                    i === activeIdx
-                      ? 'border-indigo-500 bg-indigo-600 text-white'
-                      : 'border-zinc-200 bg-white/60 text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 dark:border-white/10 dark:bg-white/5 dark:text-zinc-300 dark:hover:text-white',
-                  )}
-                >
-                  {b.code}
-                </button>
-              )
-            })
-          )}
-        </div>
+      {/* Mobile picker — a simple select; the desktop rail handles the rest */}
+      <div className="lg:hidden">
+        <Select aria-label={t.pick} value={String(activeIdx)} onChange={(e) => selectBuilder(Number(e.target.value))}>
+          {BUILDERS.map((b, i) => (
+            <option key={b.id} value={i}>
+              {nameFor(b)} — {b.code}
+            </option>
+          ))}
+        </Select>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
-        <div className="flex flex-col gap-5">
+      {/* min-w-0 on the canvas track (via minmax) keeps the wide code block from
+          shoving the inspector off-screen. */}
+      <div className="grid gap-5 lg:grid-cols-[13.5rem_minmax(0,1fr)_17rem]">
+        {/* Picker rail (desktop) */}
+        <aside className="hidden lg:flex lg:flex-col lg:gap-3 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)]">
+          <Input startIcon={<Icon name="search" size={16} />} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t.search} />
+          <div className="flex-1 space-y-0.5 overflow-y-auto rounded-2xl border border-white/60 bg-white/60 p-2 dark:border-white/10 dark:bg-zinc-900/50">
+            {filteredBuilders.length === 0 ? (
+              <p className="p-4 text-center text-sm text-zinc-400">{t.noResults}</p>
+            ) : (
+              filteredBuilders.map((b) => {
+                const i = BUILDERS.indexOf(b)
+                return (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => selectBuilder(i)}
+                    aria-current={i === activeIdx ? 'true' : undefined}
+                    className={twMerge(
+                      'flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start text-sm transition-colors',
+                      i === activeIdx
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-zinc-600 hover:bg-white hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white',
+                    )}
+                  >
+                    <span className="truncate">{nameFor(b)}</span>
+                    <span className={twMerge('shrink-0 font-mono text-[10px]', i === activeIdx ? 'text-white/70' : 'text-zinc-400')}>{b.code}</span>
+                  </button>
+                )
+              })
+            )}
+          </div>
+        </aside>
+
+        {/* Canvas + generated code */}
+        <div className="flex min-w-0 flex-col gap-5">
           <div className="flex flex-col">
-            <span className="mb-2 text-xs font-semibold uppercase text-zinc-400">{t.builderPreview}</span>
-            <div className="grid min-h-56 place-items-center rounded-xl border border-white/60 bg-zinc-50 p-8 dark:border-white/10 dark:bg-zinc-900">
-              {preview}
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400">{t.builderPreview}</span>
+              <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] text-zinc-500 dark:bg-white/10 dark:text-zinc-400">{builder.code}</span>
+            </div>
+            <div className="grid min-h-64 place-items-center overflow-hidden rounded-2xl border border-white/60 bg-zinc-50 bg-[radial-gradient(circle,rgba(99,102,241,0.12)_1px,transparent_1px)] bg-[size:18px_18px] p-8 shadow-sm dark:border-white/10 dark:bg-zinc-900 dark:bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)]">
+              <div key={previewKey} className="contents">
+                {preview}
+              </div>
             </div>
           </div>
           <div className="flex flex-col">
-            <span className="mb-2 text-xs font-semibold uppercase text-zinc-400">{t.builderCode}</span>
-            <div className="overflow-hidden rounded-xl border border-white/10">
+            <span className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">{t.builderCode}</span>
+            <div className="overflow-hidden rounded-2xl border border-white/10 shadow-sm">
               <CodeBlock code={code} />
             </div>
           </div>
         </div>
 
-        <aside className="flex h-fit flex-col gap-4 rounded-2xl border border-white/60 bg-white/70 p-4 dark:border-white/10 dark:bg-zinc-900/60 lg:sticky lg:top-24">
+        {/* Inspector */}
+        <aside className="flex flex-col gap-4 rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-zinc-900/60 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
           <div className="flex items-center justify-between gap-2">
             {hasProps ? (
               <div className="inline-flex items-center gap-1 rounded-lg border border-white/50 bg-white/50 p-1 dark:border-white/10 dark:bg-white/5">
@@ -532,11 +620,8 @@ function BuilderView({ lang }: { lang: Lang }) {
             )}
             <button
               type="button"
-              onClick={() => {
-                setValues(defaultValues(builder))
-                setStyle(DEFAULT_STYLE)
-              }}
-              className="text-xs font-medium text-indigo-600 hover:underline"
+              onClick={reset}
+              className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-300"
             >
               {t.builderReset}
             </button>

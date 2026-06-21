@@ -26,7 +26,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <div
       ref={ref}
       className={twMerge(
-        'overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300',
+        'overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300',
         className,
       )}
       {...props}

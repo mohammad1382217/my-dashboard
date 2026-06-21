@@ -12,7 +12,7 @@ export interface BadgeProps extends ComponentPropsWithoutRef<'span'> {
 }
 
 const base =
-  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap'
+  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium leading-normal whitespace-nowrap ring-1 ring-inset ring-black/[0.04] transition-colors dark:ring-white/[0.06]'
 
 const variantClasses: Record<BadgeVariant, string> = {
   default: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300',

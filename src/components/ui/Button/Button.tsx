@@ -20,14 +20,14 @@ interface Ripple {
 }
 
 const base =
-  'relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md font-medium whitespace-nowrap outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-900/30 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50'
+  'relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md font-medium whitespace-nowrap outline-none select-none transition-[color,background-color,border-color,box-shadow,transform] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-neutral-900/30 focus-visible:ring-offset-1 dark:focus-visible:ring-white/30 disabled:pointer-events-none disabled:opacity-50'
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200',
+  primary: 'bg-neutral-900 text-white shadow-sm hover:bg-neutral-800 hover:shadow-md dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200',
   secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700',
-  outline: 'border border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-100 dark:border-zinc-700 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800',
+  outline: 'border border-neutral-300 bg-white text-neutral-900 shadow-sm hover:bg-neutral-100 hover:border-neutral-400 dark:border-zinc-700 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800 dark:hover:border-zinc-600',
   ghost: 'text-neutral-900 hover:bg-neutral-100 dark:text-zinc-100 dark:hover:bg-zinc-800',
-  destructive: 'bg-red-600 text-white hover:bg-red-500',
+  destructive: 'bg-red-600 text-white shadow-sm hover:bg-red-500 hover:shadow-md',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {

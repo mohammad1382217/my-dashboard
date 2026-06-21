@@ -281,7 +281,9 @@ export function ImageCompressor({ labels, defaultQuality = 0.8, className, ...pr
             return (
               <div key={item.id} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-zinc-900/60">
                 <img src={item.url} alt={item.name} className="size-14 shrink-0 rounded-lg border border-slate-200 object-cover dark:border-white/10" />
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                {/* Technical metadata (filename, dimensions, sizes, arrow) stays LTR so the
+                    bidi algorithm doesn't scramble it inside an RTL (Persian) layout. */}
+                <div dir="ltr" className="flex min-w-0 flex-1 flex-col gap-0.5 text-start">
                   <span className="truncate text-sm font-medium text-slate-800 dark:text-zinc-100">{item.name}</span>
                   <span className="text-xs text-slate-500 dark:text-zinc-400">
                     {item.width}×{item.height} · {formatBytes(item.originalSize)} → <span className="font-medium text-slate-700 dark:text-zinc-200">{formatBytes(item.size)}</span>
