@@ -18,7 +18,7 @@ export interface BreadcrumbProps extends Omit<ComponentPropsWithoutRef<'nav'>, '
 }
 
 const linkClass =
-  'rounded-sm text-slate-500 outline-none transition-colors hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:text-zinc-400 dark:hover:text-zinc-100'
+  'rounded-sm text-slate-500 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:text-zinc-400 dark:hover:text-zinc-100'
 
 /**
  * A breadcrumb trail. Pass `items` from root to current; the last item is
@@ -37,7 +37,7 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Brea
           return (
             <li key={index} className="inline-flex items-center gap-1.5">
               {isLast || !item.href ? (
-                <span aria-current={isLast ? 'page' : undefined} className="font-medium text-slate-900 dark:text-zinc-100">
+                <span aria-current={isLast ? 'page' : undefined} className="font-medium text-fg">
                   {item.label}
                 </span>
               ) : (
@@ -46,7 +46,7 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Brea
                 </a>
               )}
               {isLast ? null : (
-                <span aria-hidden="true" className="text-slate-300 dark:text-zinc-600">
+                <span aria-hidden="true" className="text-faint">
                   {separator ?? (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transform-[rotate(0deg)] rtl:transform-[rotate(180deg)]">
                       <path d="m9 18 6-6-6-6" />

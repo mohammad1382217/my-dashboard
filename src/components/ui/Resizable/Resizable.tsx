@@ -106,7 +106,7 @@ export const Resizable = forwardRef<HTMLDivElement, ResizableProps>(function Res
         if (typeof ref === 'function') ref(node)
         else if (ref) ref.current = node
       }}
-      className={twMerge('flex overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-800', isHorizontal ? 'flex-row' : 'flex-col', className)}
+      className={twMerge('flex overflow-hidden rounded-lg border border-border', isHorizontal ? 'flex-row' : 'flex-col', className)}
     >
       <div style={{ flexBasis: `${current}%` }} className="min-h-0 min-w-0 grow-0 shrink-0 overflow-auto">
         {first}
@@ -125,9 +125,9 @@ export const Resizable = forwardRef<HTMLDivElement, ResizableProps>(function Res
         onPointerUp={onPointerUp}
         onKeyDown={onKeyDown}
         className={twMerge(
-          'group relative flex shrink-0 items-center justify-center bg-slate-200 outline-none transition-colors hover:bg-indigo-400 focus-visible:bg-indigo-500 dark:bg-zinc-800 dark:hover:bg-indigo-500',
+          'group relative flex shrink-0 items-center justify-center bg-slate-200 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-primary-400 focus-visible:bg-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/40 dark:bg-zinc-800 dark:hover:bg-primary-500',
           isHorizontal ? 'w-1.5 cursor-col-resize' : 'h-1.5 cursor-row-resize',
-          dragging ? 'bg-indigo-500 dark:bg-indigo-500' : null,
+          dragging ? 'bg-primary-500 dark:bg-primary-500' : null,
         )}
       >
         <span className={twMerge('rounded-full bg-white/70 dark:bg-zinc-500', isHorizontal ? 'h-6 w-0.5' : 'h-0.5 w-6')} />

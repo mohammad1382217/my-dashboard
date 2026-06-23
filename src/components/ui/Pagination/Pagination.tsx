@@ -46,7 +46,7 @@ function buildRange(page: number, count: number, siblingCount: number): (number 
 }
 
 const itemBase =
-  'inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500/30 disabled:pointer-events-none disabled:opacity-40'
+  'inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm font-medium outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-primary-500/30 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40'
 const pageIdle = 'text-slate-600 hover:bg-slate-100 dark:text-zinc-300 dark:hover:bg-zinc-800'
 const pageActive = 'bg-slate-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
 
@@ -81,7 +81,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagi
 
         {pages.map((value, index) =>
           value === ELLIPSIS ? (
-            <li key={`e${index}`} aria-hidden="true" className="inline-flex h-9 min-w-9 items-center justify-center text-slate-400 dark:text-zinc-600">
+            <li key={`e${index}`} aria-hidden="true" className="inline-flex h-9 min-w-9 items-center justify-center text-faint">
               …
             </li>
           ) : (

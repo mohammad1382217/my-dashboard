@@ -21,7 +21,7 @@ const STRINGS = {
 } as const
 
 const GRADIENTS = [
-  'from-indigo-500 to-violet-600',
+  'from-primary-500 to-violet-600',
   'from-emerald-500 to-teal-600',
   'from-amber-500 to-orange-600',
   'from-rose-500 to-pink-600',
@@ -47,7 +47,7 @@ export function CarouselShowcase() {
           </div>
         ))}
       />
-      <p className="text-center text-sm text-slate-500 dark:text-zinc-400">{t.hint}</p>
+      <p className="text-center text-sm text-muted">{t.hint}</p>
     </div>
   )
 }

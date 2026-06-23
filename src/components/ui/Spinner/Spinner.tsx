@@ -27,7 +27,7 @@ export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinne
     <span ref={ref} role="status" className={twMerge('inline-flex', className)} {...props}>
       <span
         className={twMerge(
-          'inline-block animate-spin rounded-full border-slate-300 border-t-indigo-600 motion-reduce:animate-none dark:border-zinc-700 dark:border-t-indigo-400',
+          'inline-block animate-spin rounded-full border-slate-300 border-t-primary-600 motion-reduce:animate-none dark:border-zinc-700 dark:border-t-primary-400',
           sizeClasses[size],
         )}
       />

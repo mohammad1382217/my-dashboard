@@ -104,12 +104,12 @@ type ResolvedAccordionProps = AccordionBaseProps & {
 }
 
 const containerBase =
-  'divide-y divide-neutral-200 overflow-hidden rounded-md border border-neutral-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900'
+  'divide-y divide-neutral-200 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none'
 
 const triggerBase =
-  'flex w-full items-center justify-between gap-3 px-4 py-3 text-start text-sm font-medium text-neutral-900 outline-none transition-colors hover:bg-neutral-100 focus-visible:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-neutral-900/30 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:bg-zinc-800 dark:focus-visible:ring-zinc-100/30'
+  'flex w-full items-center justify-between gap-3 px-4 py-3 text-start text-sm font-medium text-neutral-900 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-neutral-100 focus-visible:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-neutral-900/30 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:bg-zinc-800 dark:focus-visible:ring-zinc-100/30'
 
-const panelInnerBase = 'px-4 pb-4 pt-0 text-sm text-neutral-600 dark:text-neutral-400'
+const panelInnerBase = 'px-4 pb-4 pt-0 text-sm text-muted'
 
 // Single source of truth for the open/close duration. Used by the JS timer that
 // releases the open cap / marks the close complete AND injected as an inline

@@ -25,7 +25,7 @@ const base =
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-neutral-900 text-white shadow-sm hover:bg-neutral-800 hover:shadow-md dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200',
   secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700',
-  outline: 'border border-neutral-300 bg-white text-neutral-900 shadow-sm hover:bg-neutral-100 hover:border-neutral-400 dark:border-zinc-700 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800 dark:hover:border-zinc-600',
+  outline: 'border border-neutral-300 bg-white text-neutral-900 shadow-sm hover:bg-neutral-100 hover:border-input dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800 dark:hover:border-zinc-600',
   ghost: 'text-neutral-900 hover:bg-neutral-100 dark:text-zinc-100 dark:hover:bg-zinc-800',
   destructive: 'bg-red-600 text-white shadow-sm hover:bg-red-500 hover:shadow-md',
 }

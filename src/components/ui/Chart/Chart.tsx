@@ -48,6 +48,7 @@ export const Chart = forwardRef<HTMLDivElement, ChartProps>(function Chart(
 ) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(600)
+  const [active, setActive] = useState<number | null>(null)
 
   useEffect(() => {
     const el = containerRef.current
@@ -83,6 +84,10 @@ export const Chart = forwardRef<HTMLDivElement, ChartProps>(function Chart(
   const linePoints = data.map((d, i) => `${xLine(i)},${yFor(d.value)}`).join(' ')
   const areaPoints = `${x0},${y1} ${linePoints} ${x0 + (n === 1 ? plotW / 2 : plotW)},${y1}`
 
+  const xAt = (i: number) => (type === 'bar' ? xCenter(i) : xLine(i))
+  const activeX = active === null ? 0 : xAt(active)
+  const activeY = active === null ? 0 : yFor(data[active].value)
+
   const summary =
     ariaLabel ?? `${type} chart: ${data.map((d) => `${d.label} ${valueFormatter(d.value)}`).join(', ')}`
 
@@ -91,7 +96,7 @@ export const Chart = forwardRef<HTMLDivElement, ChartProps>(function Chart(
       containerRef.current = node
       if (typeof ref === 'function') ref(node)
       else if (ref) ref.current = node
-    }} className={twMerge('w-full', className)} {...props}>
+    }} className={twMerge('relative w-full', className)} {...props}>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={summary} className="w-full">
         {/* Gridlines + y ticks */}
         {Array.from({ length: gridLines + 1 }, (_, i) => {
@@ -107,24 +112,39 @@ export const Chart = forwardRef<HTMLDivElement, ChartProps>(function Chart(
           )
         })}
 
+        {/* Hover guide line */}
+        {active !== null ? (
+          <line x1={activeX} y1={y0} x2={activeX} y2={y1} className="stroke-slate-300 dark:stroke-zinc-700" strokeWidth={1} strokeDasharray="4 3" />
+        ) : null}
+
         {/* Series */}
         {type === 'bar'
           ? data.map((d, i) => (
-              <rect key={i} x={xCenter(i) - barW / 2} y={yFor(d.value)} width={barW} height={y1 - yFor(d.value)} rx={3} fill={color}>
-                <title>{`${d.label}: ${valueFormatter(d.value)}`}</title>
-              </rect>
+              <rect
+                key={i}
+                x={xCenter(i) - barW / 2}
+                y={yFor(d.value)}
+                width={barW}
+                height={y1 - yFor(d.value)}
+                rx={3}
+                fill={color}
+                className={twMerge('transition-opacity', active !== null && active !== i && 'opacity-40')}
+              />
             ))
           : (
             <>
               <polygon points={areaPoints} fill={color} opacity={0.12} />
               <polyline points={linePoints} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
               {data.map((d, i) => (
-                <circle key={i} cx={xLine(i)} cy={yFor(d.value)} r={3} fill={color}>
-                  <title>{`${d.label}: ${valueFormatter(d.value)}`}</title>
-                </circle>
+                <circle key={i} cx={xLine(i)} cy={yFor(d.value)} r={3} fill={color} />
               ))}
             </>
           )}
+
+        {/* Active point emphasis */}
+        {active !== null ? (
+          <circle cx={activeX} cy={activeY} r={5} fill={color} className="stroke-white dark:stroke-zinc-900" strokeWidth={2} />
+        ) : null}
 
         {/* X labels */}
         {data.map((d, i) => (
@@ -132,7 +152,33 @@ export const Chart = forwardRef<HTMLDivElement, ChartProps>(function Chart(
             {d.label}
           </text>
         ))}
+
+        {/* Transparent per-point hit areas drive the tooltip (generous targets for both bar and line) */}
+        {data.map((_, i) => (
+          <rect
+            key={`hit-${i}`}
+            x={xAt(i) - bandW / 2}
+            y={y0}
+            width={bandW}
+            height={plotH}
+            fill="transparent"
+            onMouseEnter={() => setActive(i)}
+            onMouseLeave={() => setActive(null)}
+          />
+        ))}
       </svg>
+
+      {/* Styled tooltip anchored to the active point (SVG user units map 1:1 to px here) */}
+      {active !== null ? (
+        <div
+          role="tooltip"
+          className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs font-medium text-white shadow-md dark:bg-white dark:text-zinc-900"
+          style={{ left: activeX, top: activeY - 10 }}
+        >
+          <span className="text-faint">{data[active].label}: </span>
+          {valueFormatter(data[active].value)}
+        </div>
+      ) : null}
     </div>
   )
 })

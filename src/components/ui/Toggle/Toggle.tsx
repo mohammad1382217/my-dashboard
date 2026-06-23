@@ -17,11 +17,11 @@ export interface ToggleProps extends Omit<ComponentPropsWithoutRef<'button'>, 'o
 }
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium outline-none transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500/30 disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-slate-200 data-[state=on]:text-slate-900 dark:hover:bg-zinc-800 dark:data-[state=on]:bg-zinc-700 dark:data-[state=on]:text-white'
+  'inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-primary-500/30 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-slate-200 data-[state=on]:text-slate-900 dark:hover:bg-zinc-800 dark:data-[state=on]:bg-zinc-700 dark:data-[state=on]:text-white'
 
 const variantClasses = {
-  default: 'bg-transparent text-slate-600 dark:text-zinc-300',
-  outline: 'border border-slate-300 bg-transparent text-slate-600 dark:border-zinc-700 dark:text-zinc-300',
+  default: 'bg-transparent text-fg-soft',
+  outline: 'border border-slate-300 bg-transparent text-slate-600 hover:border-input dark:text-zinc-300 dark:hover:border-zinc-600',
 } as const
 
 const sizeClasses = {

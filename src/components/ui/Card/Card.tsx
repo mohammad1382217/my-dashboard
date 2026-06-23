@@ -33,8 +33,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     >
       {hasHeader ? (
         <div className="flex flex-col gap-1 border-b border-slate-200 p-5 dark:border-zinc-800">
-          {title ? <h3 className="font-semibold text-slate-900 dark:text-white">{title}</h3> : null}
-          {description ? <p className="text-sm text-slate-500 dark:text-zinc-400">{description}</p> : null}
+          {title ? <h3 className="font-semibold text-fg">{title}</h3> : null}
+          {description ? <p className="text-sm text-muted">{description}</p> : null}
         </div>
       ) : null}
 

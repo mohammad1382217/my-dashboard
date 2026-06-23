@@ -22,7 +22,7 @@ export interface CollapsibleProps extends Omit<ComponentPropsWithoutRef<'div'>, 
 const TRANSITION_MS = 200
 
 const triggerBase =
-  'flex w-full items-center justify-between gap-3 rounded-md px-1 py-2 text-start text-sm font-medium text-slate-900 outline-none transition-colors hover:text-slate-600 focus-visible:ring-2 focus-visible:ring-indigo-500/30 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-100 dark:hover:text-zinc-300'
+  'flex w-full items-center justify-between gap-3 rounded-md px-1 py-2 text-start text-sm font-medium text-slate-900 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:text-slate-600 focus-visible:ring-2 focus-visible:ring-primary-500/30 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-100 dark:hover:text-zinc-300'
 
 /**
  * A single show/hide region — like one accordion row on its own. Controlled via
@@ -108,7 +108,7 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(function
         style={{ maxHeight: maxHeight === undefined ? undefined : `${maxHeight}px`, transitionDuration: `${TRANSITION_MS}ms` }}
         className={twMerge('overflow-hidden transition-[max-height,opacity] ease-out motion-reduce:transition-none', isOpen ? 'opacity-100' : 'opacity-0')}
       >
-        <div ref={innerRef} className="px-1 py-2 text-sm text-slate-600 dark:text-zinc-400">
+        <div ref={innerRef} className="px-1 py-2 text-sm text-muted">
           {children}
         </div>
       </div>

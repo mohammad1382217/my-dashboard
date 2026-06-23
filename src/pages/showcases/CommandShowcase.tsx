@@ -52,8 +52,8 @@ export function CommandShowcase() {
           { value: 'dark', label: t.dark, group: t.gTheme, icon: <Icon name="moon" size={16} />, onSelect: () => setRan(t.dark) },
         ]}
       />
-      <span className="text-sm text-slate-500 dark:text-zinc-400">
-        {t.ran} <span className="font-medium text-slate-700 dark:text-zinc-200">{ran ?? t.none}</span>
+      <span className="text-sm text-muted">
+        {t.ran} <span className="font-medium text-fg-soft">{ran ?? t.none}</span>
       </span>
     </div>
   )

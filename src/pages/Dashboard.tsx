@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import { useCallback, useEffect, useState, useMemo } from 'react'
+import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { useLang } from '../i18n'
 import type { Lang } from '../i18n'
@@ -11,15 +11,55 @@ import { HOOKS } from '../data/hooks'
 import type { HookEntry } from '../data/hooks'
 import { COMPONENTS } from '../data/registry'
 import type { ComponentEntry } from '../data/registry'
+import { extractProps } from '../data/props'
 import { Input } from '../components/ui/Input/Input'
 import { Switch } from '../components/ui/Switch/Switch'
 import { Select } from '../components/ui/Select/Select'
 import { Slider } from '../components/ui/Slider/Slider'
 import { ImageCompressor } from '../components/ui/ImageCompressor/ImageCompressor'
 import type { CompressorLabels } from '../components/ui/ImageCompressor/ImageCompressor'
+import { ColorPicker } from '../components/ui/ColorPicker/ColorPicker'
 
 type Theme = 'light' | 'dark'
 type Section = 'components' | 'builder' | 'hooks' | 'tools'
+
+const SECTIONS: Section[] = ['components', 'builder', 'hooks', 'tools']
+
+interface Route {
+  section: Section
+  /** The selected component/hook/builder id within the section (null = default/first). */
+  id: string | null
+}
+
+type Navigate = (section: Section, id?: string | null) => void
+
+/** Parse the location hash into a route, e.g. `#/components/button` → { section, id }. */
+function parseHash(): Route {
+  const raw = (typeof window !== 'undefined' ? window.location.hash : '').replace(/^#\/?/, '')
+  const [rawSection, rawId] = raw.split('/')
+  const section = SECTIONS.includes(rawSection as Section) ? (rawSection as Section) : 'components'
+  return { section, id: rawId ? decodeURIComponent(rawId) : null }
+}
+
+/**
+ * Hash-based routing — gives every component/hook/builder its own URL
+ * (`#/components/button`) so the selection survives a refresh and is shareable,
+ * with no router dependency and no server config (the hash never hits the server).
+ */
+function useHashRoute(): { route: Route; navigate: Navigate } {
+  const [route, setRoute] = useState<Route>(parseHash)
+  useEffect(() => {
+    const onHashChange = () => setRoute(parseHash())
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+  const navigate = useCallback<Navigate>((section, id) => {
+    const hash = id ? `#/${section}/${encodeURIComponent(id)}` : `#/${section}`
+    if (window.location.hash === hash) setRoute(parseHash())
+    else window.location.hash = hash
+  }, [])
+  return { route, navigate }
+}
 
 const SHELL: Record<Lang, Record<string, string>> = {
   fa: {
@@ -103,6 +143,11 @@ const STYLE_GROUPS: Record<string, Record<Lang, string>> = {
   effects: { fa: 'افکت‌ها', en: 'Effects' },
 }
 
+const PROP_COLS: Record<Lang, { title: string; prop: string; type: string; def: string; desc: string }> = {
+  fa: { title: 'پراپ‌ها', prop: 'پراپ', type: 'نوع', def: 'پیش‌فرض', desc: 'توضیح' },
+  en: { title: 'Props', prop: 'Prop', type: 'Type', def: 'Default', desc: 'Description' },
+}
+
 function useTheme(): readonly [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'light'
@@ -121,63 +166,11 @@ function useTheme(): readonly [Theme, () => void] {
   return [theme, toggle] as const
 }
 
-/** A red diagonal slash on white — the universal "no colour / transparent" affordance. */
-const NONE_SWATCH: CSSProperties = {
-  backgroundColor: '#fff',
-  backgroundImage: 'linear-gradient(to top right, transparent calc(50% - 1px), #ef4444, transparent calc(50% + 1px))',
-}
-
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  const isNone = !value
-  const swatchRing = 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-white dark:ring-offset-zinc-900'
-
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">{label}</span>
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-black/5 bg-white/60 py-0.5 ps-1 pe-1.5 dark:border-white/10 dark:bg-white/5">
-          <span className="size-3.5 rounded-[4px] border border-black/10 dark:border-white/20" style={isNone ? NONE_SWATCH : { backgroundColor: value }} />
-          <span className="font-mono text-[10px] uppercase text-zinc-400">{value || 'none'}</span>
-        </span>
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {PALETTE.map((swatch) => {
-          const selected = value.toLowerCase() === swatch.toLowerCase()
-          return (
-            <button
-              key={swatch}
-              type="button"
-              title={swatch}
-              onClick={() => onChange(swatch)}
-              style={{ backgroundColor: swatch }}
-              className={twMerge('grid size-6 place-items-center rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/15', selected && swatchRing)}
-            >
-              {selected ? <Icon name="check" size={12} className="text-white mix-blend-difference" /> : null}
-            </button>
-          )
-        })}
-        <button
-          type="button"
-          title="none"
-          aria-label="none"
-          onClick={() => onChange('')}
-          style={NONE_SWATCH}
-          className={twMerge('size-6 rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/15', isNone && swatchRing)}
-        />
-        <label
-          title="custom"
-          className="relative grid size-6 cursor-pointer place-items-center overflow-hidden rounded-md border border-black/10 bg-[conic-gradient(from_0deg,#ef4444,#eab308,#22c55e,#06b6d4,#6366f1,#d946ef,#ef4444)] transition-transform hover:scale-110 dark:border-white/15"
-        >
-          <span className="grid size-3.5 place-items-center rounded-full bg-white/90 text-[11px] font-bold leading-none text-zinc-700 shadow-sm">+</span>
-          <input
-            type="color"
-            aria-label="custom color"
-            value={value || '#000000'}
-            onChange={(e) => onChange(e.target.value)}
-            className="absolute inset-0 cursor-pointer opacity-0"
-          />
-        </label>
-      </div>
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm font-medium text-fg-soft">{label}</span>
+      <ColorPicker value={value} onChange={onChange} presets={PALETTE} allowNone label={label} />
     </div>
   )
 }
@@ -282,6 +275,47 @@ function CollapsibleCode({ label, code, defaultOpen = false }: { label: string; 
   )
 }
 
+/** Auto-generated prop reference, parsed from the component's TypeScript source. */
+function PropsTable({ source, code, lang }: { source: string; code: string; lang: Lang }) {
+  const props = useMemo(() => extractProps(source, code), [source, code])
+  if (props.length === 0) return null
+  const c = PROP_COLS[lang]
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="px-0.5 text-xs font-semibold uppercase tracking-wide text-zinc-400">{c.title}</span>
+      <div className="overflow-x-auto rounded-2xl border border-white/60 bg-white/60 dark:border-white/10 dark:bg-zinc-900/50">
+        <table className="w-full min-w-[32rem] border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-black/5 text-[11px] uppercase tracking-wide text-zinc-400 dark:border-white/10">
+              <th className="p-3 text-start font-semibold">{c.prop}</th>
+              <th className="p-3 text-start font-semibold">{c.type}</th>
+              <th className="p-3 text-start font-semibold">{c.def}</th>
+              <th className="p-3 text-start font-semibold">{c.desc}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {props.map((p) => (
+              <tr key={p.name} className="border-b border-black/5 align-top last:border-0 dark:border-white/5">
+                <td className="whitespace-nowrap p-3">
+                  <code className="font-mono text-xs text-primary-600 dark:text-primary-300">{p.name}</code>
+                  {p.required ? <span className="ms-1 text-[10px] text-rose-400" title="required">*</span> : null}
+                </td>
+                <td dir="ltr" className="p-3 text-start">
+                  <code className="font-mono text-xs text-zinc-600 dark:text-zinc-300">{p.type}</code>
+                </td>
+                <td dir="ltr" className="whitespace-nowrap p-3 text-start">
+                  <code className="font-mono text-xs text-muted">{p.default ?? '—'}</code>
+                </td>
+                <td className="p-3 text-muted">{p.description ?? ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 /** One component's page: header + a live preview, then each usage variant's code (collapsible). */
 function ComponentDetail({ entry, lang }: { entry: ComponentEntry; lang: Lang }) {
   const t = SHELL[lang]
@@ -290,10 +324,10 @@ function ComponentDetail({ entry, lang }: { entry: ComponentEntry; lang: Lang })
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">{entry.name[lang]}</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-fg">{entry.name[lang]}</h2>
             <span className="shrink-0 rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] text-zinc-500 dark:bg-white/10 dark:text-zinc-400">{entry.code}</span>
           </div>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{entry.description[lang]}</p>
+          <p className="mt-1 text-sm text-muted">{entry.description[lang]}</p>
         </div>
         <button
           type="button"
@@ -316,6 +350,8 @@ function ComponentDetail({ entry, lang }: { entry: ComponentEntry; lang: Lang })
           <CollapsibleCode key={i} label={ex.label[lang]} code={ex.code} defaultOpen={i === 0} />
         ))}
       </div>
+
+      <PropsTable source={entry.source} code={entry.code} lang={lang} />
     </div>
   )
 }
@@ -333,10 +369,9 @@ function RailLayout({ rail, mobile, children }: { rail: ReactNode; mobile: React
   )
 }
 
-function ComponentsView({ lang }: { lang: Lang }) {
+function ComponentsView({ lang, activeId, navigate }: { lang: Lang; activeId: string | null; navigate: Navigate }) {
   const t = SHELL[lang]
   const [query, setQuery] = useState('')
-  const [activeId, setActiveId] = useState(COMPONENTS[0].id)
   const active = COMPONENTS.find((c) => c.id === activeId) ?? COMPONENTS[0]
 
   const filtered = useMemo(() => {
@@ -348,7 +383,7 @@ function ComponentsView({ lang }: { lang: Lang }) {
   return (
     <RailLayout
       mobile={
-        <Select aria-label={t.pick} value={activeId} onChange={(e) => setActiveId(e.target.value)}>
+        <Select aria-label={t.pick} value={active.id} onChange={(e) => navigate('components', e.target.value)}>
           {COMPONENTS.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name[lang]} — {c.code}
@@ -367,17 +402,17 @@ function ComponentsView({ lang }: { lang: Lang }) {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => setActiveId(c.id)}
-                  aria-current={c.id === activeId ? 'true' : undefined}
+                  onClick={() => navigate('components', c.id)}
+                  aria-current={c.id === active.id ? 'true' : undefined}
                   className={twMerge(
                     'flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start text-sm transition-colors',
-                    c.id === activeId
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-zinc-600 hover:bg-white hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white',
+                    c.id === active.id
+                      ? 'bg-primary-600 text-white shadow-sm'
+                      : 'text-zinc-600 hover:bg-white hover:text-fg-soft dark:hover:bg-white/10 dark:hover:text-white',
                   )}
                 >
                   <span className="truncate">{c.name[lang]}</span>
-                  <span className={twMerge('shrink-0 font-mono text-[10px]', c.id === activeId ? 'text-white/70' : 'text-zinc-400')}>{c.code}</span>
+                  <span className={twMerge('shrink-0 font-mono text-[10px]', c.id === active.id ? 'text-white/70' : 'text-zinc-400')}>{c.code}</span>
                 </button>
               ))
             )}
@@ -390,8 +425,7 @@ function ComponentsView({ lang }: { lang: Lang }) {
   )
 }
 
-function HooksView({ lang }: { lang: Lang }) {
-  const [activeId, setActiveId] = useState(HOOKS[0].id)
+function HooksView({ lang, activeId, navigate }: { lang: Lang; activeId: string | null; navigate: Navigate }) {
   const active = HOOKS.find((h) => h.id === activeId) ?? HOOKS[0]
   const groups = useMemo(() => {
     const map = new Map<string, HookEntry[]>()
@@ -407,7 +441,7 @@ function HooksView({ lang }: { lang: Lang }) {
   return (
     <RailLayout
       mobile={
-        <Select value={activeId} onChange={(e) => setActiveId(e.target.value)}>
+        <Select value={active.id} onChange={(e) => navigate('hooks', e.target.value)}>
           {HOOKS.map((h) => (
             <option key={h.id} value={h.id}>
               {h.name} — {h.category[lang]}
@@ -419,16 +453,16 @@ function HooksView({ lang }: { lang: Lang }) {
         <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-white/60 bg-white/60 p-3 dark:border-white/10 dark:bg-zinc-900/50">
           {groups.map(([category, hooks]) => (
             <div key={category} className="flex flex-col gap-1">
-              <span className="px-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-500">{category}</span>
+              <span className="px-2 text-[10px] font-semibold uppercase tracking-wide text-primary-500">{category}</span>
               {hooks.map((h) => (
                 <button
                   key={h.id}
                   type="button"
-                  onClick={() => setActiveId(h.id)}
-                  aria-current={h.id === activeId ? 'true' : undefined}
+                  onClick={() => navigate('hooks', h.id)}
+                  aria-current={h.id === active.id ? 'true' : undefined}
                   className={twMerge(
                     'rounded-lg px-3 py-2 text-start font-mono text-xs transition-colors',
-                    h.id === activeId ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-600 hover:bg-white hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white',
+                    h.id === active.id ? 'bg-primary-600 text-white shadow-sm' : 'text-zinc-600 hover:bg-white hover:text-fg-soft dark:hover:bg-white/10 dark:hover:text-white',
                   )}
                 >
                   {h.name}
@@ -442,10 +476,10 @@ function HooksView({ lang }: { lang: Lang }) {
       <div className="flex min-w-0 flex-col gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-2xl font-bold tracking-tight text-indigo-600 dark:text-indigo-300">{active.name}</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-primary-600 dark:text-primary-300">{active.name}</h2>
             <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-500 dark:bg-white/10 dark:text-zinc-400">{active.category[lang]}</span>
           </div>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{active.description[lang]}</p>
+          <p className="mt-1 text-sm text-muted">{active.description[lang]}</p>
         </div>
         <div className="overflow-hidden rounded-2xl border border-white/10">
           <CodeBlock code={active.code} filename={active.file} />
@@ -477,15 +511,18 @@ function ControlField({ control, value, onChange, lang }: { control: Control; va
   return <Input label={label} value={String(value)} onChange={(e) => onChange(e.target.value)} />
 }
 
-function BuilderView({ lang }: { lang: Lang }) {
+function BuilderView({ lang, activeId, navigate }: { lang: Lang; activeId: string | null; navigate: Navigate }) {
   const t = SHELL[lang]
-  const [activeIdx, setActiveIdx] = useState(0)
-  const [values, setValues] = useState<BuilderValues>(() => defaultValues(BUILDERS[0]))
+  const activeIdx = Math.max(0, BUILDERS.findIndex((b) => b.id === activeId))
+  const builder = BUILDERS[activeIdx]
+  // Inspector state seeds from the active builder. The view is remounted (keyed on the
+  // route id in Dashboard) when the builder changes, so these initializers re-run with
+  // fresh defaults — no reset effect needed, and it's correct for URL/back-forward nav too.
+  const [values, setValues] = useState<BuilderValues>(() => defaultValues(builder))
   const [style, setStyle] = useState<StyleState>(DEFAULT_STYLE)
-  const [tab, setTab] = useState<'props' | 'style'>('props')
+  const [tab, setTab] = useState<'props' | 'style'>(builder.controls.length > 0 ? 'props' : 'style')
 
   const [query, setQuery] = useState('')
-  const builder = BUILDERS[activeIdx]
   const hasProps = builder.controls.length > 0
   const cssStyle = buildStyle(style)
   const cls = buildClass(style)
@@ -511,10 +548,7 @@ function BuilderView({ lang }: { lang: Lang }) {
   }, [query])
 
   function selectBuilder(i: number) {
-    setActiveIdx(i)
-    setValues(defaultValues(BUILDERS[i]))
-    setStyle(DEFAULT_STYLE)
-    setTab(BUILDERS[i].controls.length > 0 ? 'props' : 'style')
+    navigate('builder', BUILDERS[i].id)
   }
 
   function reset() {
@@ -525,8 +559,8 @@ function BuilderView({ lang }: { lang: Lang }) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">{t.builderTitle}</h2>
-        <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">{t.builderSub}</p>
+        <h2 className="text-2xl font-bold tracking-tight text-fg">{t.builderTitle}</h2>
+        <p className="mt-1 max-w-2xl text-sm text-muted">{t.builderSub}</p>
       </div>
 
       {/* Mobile picker — a simple select; the desktop rail handles the rest */}
@@ -561,8 +595,8 @@ function BuilderView({ lang }: { lang: Lang }) {
                     className={twMerge(
                       'flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start text-sm transition-colors',
                       i === activeIdx
-                        ? 'bg-indigo-600 text-white shadow-sm'
-                        : 'text-zinc-600 hover:bg-white hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white',
+                        ? 'bg-primary-600 text-white shadow-sm'
+                        : 'text-zinc-600 hover:bg-white hover:text-fg-soft dark:hover:bg-white/10 dark:hover:text-white',
                     )}
                   >
                     <span className="truncate">{nameFor(b)}</span>
@@ -596,7 +630,7 @@ function BuilderView({ lang }: { lang: Lang }) {
         </div>
 
         {/* Inspector */}
-        <aside className="flex flex-col gap-4 rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-zinc-900/60 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+        <aside className="flex select-none flex-col gap-4 rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm [&_input]:select-text [&_textarea]:select-text dark:border-white/10 dark:bg-zinc-900/60 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
           <div className="flex items-center justify-between gap-2">
             {hasProps ? (
               <div className="inline-flex items-center gap-1 rounded-lg border border-white/50 bg-white/50 p-1 dark:border-white/10 dark:bg-white/5">
@@ -608,7 +642,7 @@ function BuilderView({ lang }: { lang: Lang }) {
                     aria-current={tab === tb ? 'true' : undefined}
                     className={twMerge(
                       'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
-                      tab === tb ? 'bg-white text-indigo-700 shadow-sm dark:bg-white/15 dark:text-white' : 'text-zinc-500 dark:text-zinc-400',
+                      tab === tb ? 'bg-white text-primary-700 shadow-sm dark:bg-white/15 dark:text-white' : 'text-muted',
                     )}
                   >
                     {tb === 'props' ? t.builderProps : t.builderStyle}
@@ -621,7 +655,7 @@ function BuilderView({ lang }: { lang: Lang }) {
             <button
               type="button"
               onClick={reset}
-              className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-300"
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:underline dark:text-primary-300"
             >
               {t.builderReset}
             </button>
@@ -691,7 +725,8 @@ function ToolsView({ lang }: { lang: Lang }) {
 }
 
 function Dashboard() {
-  const [section, setSection] = useState<Section>('components')
+  const { route, navigate } = useHashRoute()
+  const section = route.section
   const [theme, toggleTheme] = useTheme()
   const { lang, toggle: toggleLang } = useLang()
   const t = SHELL[lang]
@@ -699,9 +734,9 @@ function Dashboard() {
   return (
     <div className="relative min-h-screen bg-linear-to-b from-slate-50 to-slate-200 text-zinc-900 dark:from-zinc-900 dark:to-black dark:text-zinc-50">
       <header className="sticky top-0 z-30 border-b border-white/40 bg-white/60 backdrop-blur dark:border-white/5 dark:bg-zinc-950/50">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 sm:h-16 sm:flex-nowrap sm:py-0 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-linear-to-br from-indigo-500 to-violet-600 text-sm font-bold text-white">
+            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-linear-to-br from-primary-500 to-violet-600 text-sm font-bold text-white">
               UI
             </div>
             <div className="hidden flex-col sm:flex">
@@ -710,16 +745,16 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 rounded-lg border border-white/50 bg-white/50 p-1 dark:border-white/10 dark:bg-white/5">
+          <div className="order-last flex w-full items-center justify-center gap-1 overflow-x-auto rounded-lg border border-white/50 bg-white/50 p-1 dark:border-white/10 dark:bg-white/5 sm:order-none sm:w-auto sm:justify-start">
             {(['components', 'builder', 'hooks', 'tools'] as const).map((s) => (
               <button
                 key={s}
                 type="button"
-                onClick={() => setSection(s)}
+                onClick={() => navigate(s)}
                 aria-current={s === section ? 'true' : undefined}
                 className={twMerge(
-                  'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                  s === section ? 'bg-white text-indigo-700 shadow-sm dark:bg-white/15 dark:text-white' : 'text-zinc-500 dark:text-zinc-400',
+                  'shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+                  s === section ? 'bg-white text-primary-700 shadow-sm dark:bg-white/15 dark:text-white' : 'text-muted',
                 )}
               >
                 {t[s]}
@@ -748,11 +783,11 @@ function Dashboard() {
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         {section === 'components' ? (
-          <ComponentsView lang={lang} />
+          <ComponentsView lang={lang} activeId={route.id} navigate={navigate} />
         ) : section === 'builder' ? (
-          <BuilderView lang={lang} />
+          <BuilderView key={route.id ?? '_'} lang={lang} activeId={route.id} navigate={navigate} />
         ) : section === 'hooks' ? (
-          <HooksView lang={lang} />
+          <HooksView lang={lang} activeId={route.id} navigate={navigate} />
         ) : (
           <ToolsView lang={lang} />
         )}

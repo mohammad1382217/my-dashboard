@@ -53,8 +53,8 @@ export function MenubarShowcase() {
           { label: t.view, items: [{ label: t.zoomIn, onSelect: pick(t.zoomIn) }, { label: t.zoomOut, onSelect: pick(t.zoomOut) }, { label: t.full, onSelect: pick(t.full) }] },
         ]}
       />
-      <span className="text-sm text-slate-500 dark:text-zinc-400">
-        {t.ran} <span className="font-medium text-slate-700 dark:text-zinc-200">{ran ?? t.none}</span>
+      <span className="text-sm text-muted">
+        {t.ran} <span className="font-medium text-fg-soft">{ran ?? t.none}</span>
       </span>
     </div>
   )

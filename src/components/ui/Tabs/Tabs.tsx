@@ -29,7 +29,7 @@ export interface TabsProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChan
 }
 
 const tabBase =
-  'relative z-10 shrink-0 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500/40 disabled:cursor-not-allowed disabled:opacity-50'
+  'relative z-10 shrink-0 text-sm font-medium outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50'
 
 // Per-variant classes. The moving indicator supplies the active underline / pill,
 // so the tabs themselves only switch text colour.
@@ -38,18 +38,18 @@ const VARIANTS: Record<
   { list: string; tab: string; selected: string; idle: string; indicator: string }
 > = {
   underline: {
-    list: 'border-b border-slate-200 dark:border-zinc-800',
+    list: 'border-b border-border',
     tab: 'px-3 py-2',
-    selected: 'text-indigo-600 dark:text-indigo-400',
-    idle: 'text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-100',
-    indicator: 'bottom-0 h-0.5 rounded-full bg-indigo-500 dark:bg-indigo-400',
+    selected: 'text-primary-600 dark:text-primary-400',
+    idle: 'text-slate-500 hover:text-muted dark:hover:text-zinc-100',
+    indicator: 'bottom-0 h-0.5 rounded-full bg-primary-500 dark:bg-primary-400',
   },
   pill: {
     list: '',
     tab: 'rounded-md px-3 py-1.5',
-    selected: 'text-slate-900 dark:text-white',
-    idle: 'text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-100',
-    indicator: 'inset-y-0 rounded-md bg-slate-100 dark:bg-zinc-800',
+    selected: 'text-fg',
+    idle: 'text-slate-500 hover:text-muted dark:hover:text-zinc-100',
+    indicator: 'inset-y-0 rounded-md bg-surface-2',
   },
 }
 

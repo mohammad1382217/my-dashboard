@@ -31,8 +31,8 @@ export function PopoverShowcase() {
     <Popover align="start" trigger={t.trigger}>
       <div className="flex flex-col gap-3">
         <div>
-          <p className="text-sm font-medium text-slate-900 dark:text-zinc-100">{t.title}</p>
-          <p className="text-xs text-slate-500 dark:text-zinc-400">{t.desc}</p>
+          <p className="text-sm font-medium text-fg">{t.title}</p>
+          <p className="text-xs text-muted">{t.desc}</p>
         </div>
         <label className="flex items-center justify-between gap-3 text-sm">
           <span>{t.width}</span>

@@ -24,7 +24,7 @@ export const Separator = forwardRef<HTMLDivElement, SeparatorProps>(function Sep
       role={decorative ? 'none' : 'separator'}
       aria-orientation={decorative ? undefined : orientation}
       className={twMerge(
-        'shrink-0 bg-slate-200 dark:bg-zinc-800',
+        'shrink-0 bg-surface-2',
         orientation === 'horizontal' ? 'h-px w-full' : 'h-full w-px',
         className,
       )}

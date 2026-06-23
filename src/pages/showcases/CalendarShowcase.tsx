@@ -19,8 +19,8 @@ export function CalendarShowcase() {
   return (
     <div className="flex flex-col items-center gap-3">
       <Calendar value={date} onChange={setDate} locale={locale} weekStartsOn={lang === 'fa' ? 6 : 0} />
-      <span className="text-sm text-slate-500 dark:text-zinc-400">
-        {t.selected} <span className="font-medium text-slate-700 dark:text-zinc-200">{date ? fmt.format(date) : t.none}</span>
+      <span className="text-sm text-muted">
+        {t.selected} <span className="font-medium text-fg-soft">{date ? fmt.format(date) : t.none}</span>
       </span>
     </div>
   )

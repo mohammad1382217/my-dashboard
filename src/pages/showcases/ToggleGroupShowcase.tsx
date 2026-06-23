@@ -35,7 +35,7 @@ export function ToggleGroupShowcase() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <span className="text-xs text-slate-500 dark:text-zinc-400">{t.alignTitle}</span>
+        <span className="text-xs text-muted">{t.alignTitle}</span>
         <ToggleGroup
           value={align}
           onValueChange={setAlign}
@@ -47,7 +47,7 @@ export function ToggleGroupShowcase() {
         />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-xs text-slate-500 dark:text-zinc-400">{t.formatTitle}</span>
+        <span className="text-xs text-muted">{t.formatTitle}</span>
         <ToggleGroup
           type="multiple"
           value={format}

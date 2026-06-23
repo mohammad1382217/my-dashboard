@@ -147,7 +147,7 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>(function
                   onClick={() => select(index)}
                   onMouseEnter={() => !item.disabled && setActiveIndex(index)}
                   className={twMerge(
-                    'flex w-full items-center rounded-md px-3 py-2 text-start text-sm text-slate-700 outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-300',
+                    'flex w-full items-center rounded-md px-3 py-2 text-start text-sm text-slate-700 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-100 dark:hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-300',
                     index === activeIndex && !item.disabled ? 'bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-white' : null,
                   )}
                 >

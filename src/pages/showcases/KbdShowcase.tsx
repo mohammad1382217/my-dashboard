@@ -12,7 +12,7 @@ export function KbdShowcase() {
   const t = STRINGS[lang]
 
   return (
-    <div className="flex flex-col gap-3 text-sm text-slate-700 dark:text-zinc-300">
+    <div className="flex flex-col gap-3 text-sm text-fg-soft">
       <div className="flex items-center justify-between gap-6">
         <span>{t.search}</span>
         <span className="flex gap-1">

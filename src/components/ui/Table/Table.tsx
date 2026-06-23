@@ -40,16 +40,16 @@ const alignClass = {
  */
 export function Table<Row>({ columns, data, caption, getRowKey, emptyContent, className, ...props }: TableProps<Row>) {
   return (
-    <div className="w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-zinc-800">
+    <div className="w-full overflow-x-auto rounded-lg border border-slate-200 shadow-sm dark:border-zinc-800 dark:shadow-none">
       <table className={twMerge('w-full caption-bottom border-collapse text-sm', className)} {...props}>
-        {caption ? <caption className="px-3 py-2 text-xs text-slate-500 dark:text-zinc-400">{caption}</caption> : null}
+        {caption ? <caption className="px-3 py-2 text-xs text-muted">{caption}</caption> : null}
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900/60">
             {columns.map((col) => (
               <th
                 key={col.key}
                 scope="col"
-                className={twMerge('px-3 py-2.5 font-medium text-slate-500 dark:text-zinc-400', alignClass[col.align ?? 'start'], col.className)}
+                className={twMerge('px-3 py-2.5 font-medium text-muted', alignClass[col.align ?? 'start'], col.className)}
               >
                 {col.header}
               </th>
@@ -59,7 +59,7 @@ export function Table<Row>({ columns, data, caption, getRowKey, emptyContent, cl
         <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
           {data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="px-3 py-8 text-center text-slate-400 dark:text-zinc-500">
+              <td colSpan={columns.length} className="px-3 py-8 text-center text-faint">
                 {emptyContent ?? 'No data'}
               </td>
             </tr>

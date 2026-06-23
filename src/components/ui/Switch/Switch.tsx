@@ -95,8 +95,8 @@ const sizeClasses: Record<
 // double-dimming). `ring-offset-white` assumes a white surface, which is the house palette.
 const trackBase =
   'relative inline-flex shrink-0 items-center rounded-full bg-slate-300 transition-colors dark:bg-zinc-700 ' +
-  'peer-checked:bg-indigo-600 ' +
-  'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-white peer-focus-visible:ring-indigo-500/40 ' +
+  'peer-checked:bg-primary-600 ' +
+  'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-white peer-focus-visible:ring-primary-500/40 ' +
   'peer-disabled:cursor-not-allowed peer-disabled:opacity-60'
 
 const trackError = 'bg-red-200 peer-checked:bg-red-600 peer-focus-visible:ring-red-500/40'
@@ -224,7 +224,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
         <label
           htmlFor={inputId}
           className={twMerge(
-            'inline-flex w-fit select-none items-center gap-2.5 font-medium text-slate-700 dark:text-zinc-300',
+            'inline-flex w-fit select-none items-center gap-2.5 font-medium text-fg-soft',
             disabled ? 'cursor-not-allowed' : 'cursor-pointer',
             dims.text,
           )}
@@ -264,7 +264,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
           {errorMessage}
         </p>
       ) : helperText ? (
-        <p id={helperId} className="text-sm text-slate-500 dark:text-zinc-400">
+        <p id={helperId} className="text-sm text-muted">
           {helperText}
         </p>
       ) : null}

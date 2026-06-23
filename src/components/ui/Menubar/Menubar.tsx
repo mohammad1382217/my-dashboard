@@ -26,10 +26,10 @@ export interface MenubarProps {
   className?: string
 }
 
-type Position = { top: number; left: number }
+type Position = { top: number; left?: number; right?: number }
 
 const triggerClass =
-  'rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 outline-none transition-colors hover:bg-slate-100 focus-visible:bg-slate-100 data-[open=true]:bg-slate-100 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus-visible:bg-zinc-800 dark:data-[open=true]:bg-zinc-800'
+  'rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-100 focus-visible:bg-slate-100 focus-visible:ring-2 focus-visible:ring-primary-500/40 active:scale-[0.98] data-[open=true]:bg-slate-100 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus-visible:bg-zinc-800 dark:data-[open=true]:bg-zinc-800'
 
 /**
  * A desktop-style menubar: a row of menus, each opening a dropdown. One menu is
@@ -53,7 +53,11 @@ export const Menubar = forwardRef<HTMLDivElement, MenubarProps>(function Menubar
     const node = triggerRefs.current[index]
     if (!node) return null
     const rect = node.getBoundingClientRect()
-    return { top: rect.bottom + 4, left: rect.left }
+    // RTL: anchor the menu to the trigger's right edge so it opens toward the left.
+    const rtl = getComputedStyle(node).direction === 'rtl'
+    return rtl
+      ? { top: rect.bottom + 4, right: Math.max(8, window.innerWidth - rect.right) }
+      : { top: rect.bottom + 4, left: Math.max(8, rect.left) }
   }
 
   function openMenu(index: number, focusItem: number) {
@@ -212,8 +216,8 @@ export const Menubar = forwardRef<HTMLDivElement, MenubarProps>(function Menubar
               role="menu"
               aria-label={menus[openIndex].label}
               onKeyDown={onMenuKeyDown}
-              style={{ top: position.top, left: position.left }}
-              className="fixed z-50 min-w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
+              style={{ top: position.top, left: position.left, right: position.right }}
+              className="fixed z-50 min-w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-zinc-800 dark:bg-zinc-900 dark:ring-white/10"
             >
               {menus[openIndex].items.map((item, itemIndex) => (
                 <button
@@ -232,7 +236,7 @@ export const Menubar = forwardRef<HTMLDivElement, MenubarProps>(function Menubar
                     close(true)
                   }}
                   className={twMerge(
-                    'flex w-full items-center rounded-md px-3 py-2 text-start text-sm text-slate-700 outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-300',
+                    'flex w-full items-center rounded-md px-3 py-2 text-start text-sm text-slate-700 outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-primary-500/40 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-300',
                     itemIndex === activeItem && !item.disabled ? 'bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-white' : null,
                   )}
                 >

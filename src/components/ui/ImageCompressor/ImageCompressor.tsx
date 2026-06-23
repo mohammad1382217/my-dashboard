@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import type { ComponentPropsWithoutRef, DragEvent } from 'react'
+import type { ComponentPropsWithoutRef, CSSProperties, DragEvent } from 'react'
 import { twMerge } from 'tailwind-merge'
+
+interface EncodeResult {
+  blob: Blob
+  width: number
+  height: number
+}
 
 export interface CompressorLabels {
   drop: string
@@ -115,6 +121,52 @@ export function ImageCompressor({ labels, defaultQuality = 0.8, className, ...pr
   const genRef = useRef(0)
   const itemsRef = useRef<CompressedImage[]>([])
 
+  // WebP encoding runs in a Web Worker so a large batch never freezes the UI.
+  // Where Worker/OffscreenCanvas aren't available we fall back to the main thread.
+  const workerRef = useRef<Worker | null>(null)
+  const pendingRef = useRef(new Map<number, { resolve: (r: EncodeResult) => void; reject: (e: Error) => void }>())
+  const jobIdRef = useRef(0)
+
+  useEffect(() => {
+    const supported =
+      typeof Worker !== 'undefined' && typeof OffscreenCanvas !== 'undefined' && typeof createImageBitmap !== 'undefined'
+    if (!supported) return
+    let worker: Worker
+    try {
+      worker = new Worker(new URL('./webpWorker.ts', import.meta.url), { type: 'module' })
+    } catch {
+      return
+    }
+    const pending = pendingRef.current
+    worker.onmessage = (event: MessageEvent) => {
+      const { id, blob, width, height, error } = event.data as { id: number; blob?: Blob; width?: number; height?: number; error?: string }
+      const job = pending.get(id)
+      if (!job) return
+      pending.delete(id)
+      if (error || !blob) job.reject(new Error(error ?? 'Encoding failed'))
+      else job.resolve({ blob, width: width!, height: height! })
+    }
+    workerRef.current = worker
+    return () => {
+      worker.terminate()
+      workerRef.current = null
+      pending.clear()
+    }
+  }, [])
+
+  /** Encode to WebP off-thread when possible, else on the main thread. */
+  function encode(file: File, quality: number, maxWidth: number): Promise<EncodeResult> {
+    const worker = workerRef.current
+    if (worker) {
+      return new Promise<EncodeResult>((resolve, reject) => {
+        const id = jobIdRef.current++
+        pendingRef.current.set(id, { resolve, reject })
+        worker.postMessage({ id, file, quality, maxWidth })
+      })
+    }
+    return encodeWebP(file, quality, maxWidth)
+  }
+
   useEffect(() => {
     itemsRef.current = items
   }, [items])
@@ -137,7 +189,7 @@ export function ImageCompressor({ labels, defaultQuality = 0.8, className, ...pr
       const results: CompressedImage[] = []
       for (const file of files) {
         try {
-          const { blob, width, height } = await encodeWebP(file, quality, maxWidth)
+          const { blob, width, height } = await encode(file, quality, maxWidth)
           if (gen !== genRef.current) {
             results.forEach((r) => URL.revokeObjectURL(r.url))
             return
@@ -198,20 +250,20 @@ export function ImageCompressor({ labels, defaultQuality = 0.8, className, ...pr
         onDrop={onDrop}
         className={twMerge(
           'flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-8 text-center transition-colors',
-          dragOver ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10' : 'border-slate-300 bg-slate-50/60 dark:border-zinc-700 dark:bg-white/5',
+          dragOver ? 'border-primary-500 bg-primary-50 dark:bg-primary-500/10' : 'border-slate-300 bg-slate-50/60 dark:border-zinc-700 dark:bg-white/5',
         )}
       >
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-indigo-500">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-primary-500">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <path d="m17 8-5-5-5 5" />
           <path d="M12 3v12" />
         </svg>
-        <p className="text-sm font-medium text-slate-800 dark:text-zinc-100">{t.drop}</p>
-        <p className="text-xs text-slate-500 dark:text-zinc-400">{t.hint}</p>
+        <p className="text-sm font-medium text-fg">{t.drop}</p>
+        <p className="text-xs text-muted">{t.hint}</p>
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="mt-1 rounded-lg bg-indigo-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          className="mt-1 rounded-lg bg-primary-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-700"
         >
           {t.browse}
         </button>
@@ -221,14 +273,23 @@ export function ImageCompressor({ labels, defaultQuality = 0.8, className, ...pr
       {/* Settings */}
       <div className="grid gap-4 rounded-2xl border border-slate-200 bg-white/70 p-4 sm:grid-cols-2 dark:border-white/10 dark:bg-zinc-900/50">
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="flex items-center justify-between text-slate-700 dark:text-zinc-200">
+          <span className="flex items-center justify-between text-fg-soft">
             <span className="font-medium">{t.quality}</span>
             <span className="font-mono text-xs text-slate-400">{Math.round(quality * 100)}%</span>
           </span>
-          <input type="range" min={0.1} max={1} step={0.05} value={quality} onChange={(e) => setQuality(Number(e.target.value))} className="accent-indigo-600" />
+          <input
+            type="range"
+            min={0.1}
+            max={1}
+            step={0.05}
+            value={quality}
+            onChange={(e) => setQuality(Number(e.target.value))}
+            className="slider w-full"
+            style={{ '--slider-pct': `${((quality - 0.1) / 0.9) * 100}%` } as CSSProperties}
+          />
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-slate-700 dark:text-zinc-200">{t.maxWidth}</span>
+          <span className="font-medium text-fg-soft">{t.maxWidth}</span>
           <input
             type="number"
             min={0}
@@ -236,7 +297,7 @@ export function ImageCompressor({ labels, defaultQuality = 0.8, className, ...pr
             value={maxWidth || ''}
             placeholder={t.keep}
             onChange={(e) => setMaxWidth(Math.max(0, Number(e.target.value) || 0))}
-            className="h-9 rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:border-zinc-700 dark:bg-zinc-900"
+            className="h-9 rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 dark:border-zinc-700 dark:bg-zinc-900"
           />
         </label>
       </div>
@@ -284,9 +345,9 @@ export function ImageCompressor({ labels, defaultQuality = 0.8, className, ...pr
                 {/* Technical metadata (filename, dimensions, sizes, arrow) stays LTR so the
                     bidi algorithm doesn't scramble it inside an RTL (Persian) layout. */}
                 <div dir="ltr" className="flex min-w-0 flex-1 flex-col gap-0.5 text-start">
-                  <span className="truncate text-sm font-medium text-slate-800 dark:text-zinc-100">{item.name}</span>
-                  <span className="text-xs text-slate-500 dark:text-zinc-400">
-                    {item.width}×{item.height} · {formatBytes(item.originalSize)} → <span className="font-medium text-slate-700 dark:text-zinc-200">{formatBytes(item.size)}</span>
+                  <span className="truncate text-sm font-medium text-fg">{item.name}</span>
+                  <span className="text-xs text-muted">
+                    {item.width}×{item.height} · {formatBytes(item.originalSize)} → <span className="font-medium text-fg-soft">{formatBytes(item.size)}</span>
                   </span>
                   <span className={twMerge('mt-0.5 inline-flex w-fit rounded-full px-1.5 py-0.5 text-[10px] font-semibold', pct >= 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300')}>
                     {pct >= 0 ? `−${pct}%` : `+${-pct}%`}

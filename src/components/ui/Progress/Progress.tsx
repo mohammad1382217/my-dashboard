@@ -29,8 +29,8 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
     <div className="flex flex-col gap-1.5">
       {label || showValue ? (
         <div className="flex items-center justify-between text-sm">
-          {label ? <span className="font-medium text-slate-700 dark:text-zinc-300">{label}</span> : <span />}
-          {showValue ? <span className="tabular-nums text-slate-500 dark:text-zinc-400">{percent}%</span> : null}
+          {label ? <span className="font-medium text-fg-soft">{label}</span> : <span />}
+          {showValue ? <span className="tabular-nums text-muted">{percent}%</span> : null}
         </div>
       ) : null}
 
@@ -40,11 +40,11 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
         aria-valuenow={clamped}
         aria-valuemin={0}
         aria-valuemax={max}
-        className={twMerge('h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-zinc-800', className)}
+        className={twMerge('h-2 w-full overflow-hidden rounded-full bg-surface-2', className)}
         {...props}
       >
         <div
-          className="h-full rounded-full bg-indigo-600 transition-all duration-300 ease-out dark:bg-indigo-500"
+          className="h-full rounded-full bg-primary-600 transition-all duration-300 ease-out dark:bg-primary-500"
           style={{ width: `${percent}%` }}
         />
       </div>

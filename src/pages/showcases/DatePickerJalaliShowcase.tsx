@@ -30,7 +30,10 @@ export function DatePickerJalaliShowcase() {
   const [date, setDate] = useState<Date | null>(null)
 
   return (
-    <div className="grid max-w-xs gap-6">
+    // DEFINITE width: the live-preview frame centers content (shrink-to-fit), so its
+    // grid column is content-sized. Without a fixed width the field would resize as the
+    // trigger text changes (placeholder ↔ picked date). A fixed width keeps it stable.
+    <div className="grid w-64 gap-6 sm:w-80">
       <div className="grid gap-2">
         <DatePickerJalali
           label={t.label}
@@ -39,7 +42,7 @@ export function DatePickerJalaliShowcase() {
           value={date}
           onChange={setDate}
         />
-        <span className="text-sm text-slate-500 dark:text-zinc-400">
+        <span className="text-sm text-muted">
           {t.picked}{' '}
           <span className="font-mono">{date ? date.toISOString().slice(0, 10) : t.none}</span>
         </span>

@@ -40,10 +40,10 @@ function sanitize(value: string, length: number): string {
 }
 
 const slotBase =
-  'h-11 w-9 rounded-md border bg-white text-center text-lg font-medium text-slate-900 outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-100'
+  'h-11 w-9 rounded-md border bg-white text-center text-lg font-medium text-slate-900 outline-none transition-[color,background-color,border-color,box-shadow,transform] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-100'
 
 const slotNormal =
-  'border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:focus:border-indigo-400'
+  'border-slate-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 dark:border-zinc-700 dark:focus:border-primary-400'
 
 const slotError = 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/30'
 
@@ -137,7 +137,7 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
   return (
     <div className="flex flex-col gap-1.5">
       {label ? (
-        <span id={labelId} className="text-sm font-medium text-slate-700 dark:text-zinc-300">
+        <span id={labelId} className="text-sm font-medium text-fg-soft">
           {label}
         </span>
       ) : null}
@@ -181,7 +181,7 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
           {errorMessage}
         </p>
       ) : helperText ? (
-        <p id={helperId} className="text-sm text-slate-500 dark:text-zinc-400">
+        <p id={helperId} className="text-sm text-muted">
           {helperText}
         </p>
       ) : null}

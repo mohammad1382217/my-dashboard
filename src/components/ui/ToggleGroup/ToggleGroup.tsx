@@ -48,7 +48,7 @@ const sizeClasses = {
 } as const
 
 const itemBase =
-  'inline-flex items-center justify-center gap-2 border border-slate-300 font-medium text-slate-600 outline-none transition-colors hover:bg-slate-100 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-indigo-500/30 disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-slate-900 data-[state=on]:text-white dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:data-[state=on]:bg-zinc-100 dark:data-[state=on]:text-zinc-900'
+  'inline-flex items-center justify-center gap-2 border border-slate-300 font-medium text-slate-600 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:border-slate-400 hover:bg-slate-100 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-primary-500/30 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-slate-900 data-[state=on]:text-white dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800 dark:data-[state=on]:bg-zinc-100 dark:data-[state=on]:text-zinc-900'
 
 function toList(value: string | string[] | null | undefined): string[] {
   if (Array.isArray(value)) return value

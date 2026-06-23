@@ -43,7 +43,7 @@ export function TableShowcase() {
   const t = STRINGS[lang]
 
   const columns: TableColumn<Invoice>[] = [
-    { key: 'id', header: t.id, className: 'font-medium text-slate-900 dark:text-zinc-100' },
+    { key: 'id', header: t.id, className: 'font-medium text-fg' },
     { key: 'customer', header: t.customer },
     {
       key: 'status',

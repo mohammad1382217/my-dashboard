@@ -26,8 +26,8 @@ export function ToggleShowcase() {
           <span className="underline">U</span>
         </Toggle>
       </div>
-      <span className="text-sm text-slate-500 dark:text-zinc-400">
-        {t.state} <span className="font-medium text-slate-700 dark:text-zinc-200">{bold ? t.on : t.off}</span>
+      <span className="text-sm text-muted">
+        {t.state} <span className="font-medium text-fg-soft">{bold ? t.on : t.off}</span>
       </span>
     </div>
   )

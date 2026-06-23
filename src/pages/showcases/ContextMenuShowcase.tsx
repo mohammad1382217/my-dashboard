@@ -43,8 +43,8 @@ export function ContextMenuShowcase() {
           {t.hint}
         </div>
       </ContextMenu>
-      <span className="text-sm text-slate-500 dark:text-zinc-400">
-        {t.last} <span className="font-medium text-slate-700 dark:text-zinc-200">{last ?? t.none}</span>
+      <span className="text-sm text-muted">
+        {t.last} <span className="font-medium text-fg-soft">{last ?? t.none}</span>
       </span>
     </div>
   )

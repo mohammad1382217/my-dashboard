@@ -31,7 +31,7 @@ export interface ComboboxProps {
 type Position = { top: number; left: number; width: number }
 
 const inputClass =
-  'h-10 w-full rounded-md border border-slate-300 bg-white ps-3 pe-9 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500'
+  'h-10 w-full rounded-md border border-slate-300 bg-white ps-3 pe-9 text-sm text-slate-900 outline-none transition-[color,background-color,border-color,box-shadow,transform] placeholder:text-slate-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500'
 
 /**
  * A text field paired with a filterable listbox (the autocomplete/combobox
@@ -202,10 +202,10 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
               id={`${id}-listbox`}
               role="listbox"
               style={{ top: position.top, left: position.left, width: position.width }}
-              className="fixed z-50 max-h-60 overflow-y-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
+              className="fixed z-50 max-h-60 overflow-y-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-zinc-800 dark:bg-zinc-900 dark:ring-white/10"
             >
               {filtered.length === 0 ? (
-                <li className="px-3 py-2 text-sm text-slate-400 dark:text-zinc-500">{emptyText}</li>
+                <li className="px-3 py-2 text-sm text-faint">{emptyText}</li>
               ) : (
                 filtered.map((option, index) => (
                   <li
@@ -220,14 +220,14 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
                       commit(option)
                     }}
                     className={twMerge(
-                      'flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm text-slate-700 dark:text-zinc-300',
+                      'flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm text-slate-700 transition-[color,background-color] dark:text-zinc-300',
                       index === activeIndex && !option.disabled ? 'bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-white' : null,
                       option.disabled ? 'cursor-not-allowed opacity-50' : null,
                     )}
                   >
                     {option.label}
                     {option.value === selectedValue ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-indigo-600 dark:text-indigo-400">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-primary-600 dark:text-primary-400">
                         <path d="M20 6 9 17l-5-5" />
                       </svg>
                     ) : null}

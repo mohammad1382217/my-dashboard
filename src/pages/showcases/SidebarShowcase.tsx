@@ -44,15 +44,15 @@ export function SidebarShowcase() {
   })
 
   return (
-    <div className="h-96 overflow-hidden rounded-xl border border-slate-200 dark:border-zinc-800">
+    <div className="h-96 overflow-hidden rounded-xl border border-border">
       <Sidebar
         collapseLabel={t.collapse}
         expandLabel={t.expand}
-        header={<span className="truncate text-base font-bold text-slate-900 dark:text-white">UI Kit</span>}
+        header={<span className="truncate text-base font-bold text-fg">UI Kit</span>}
         footer={
           <div className="flex items-center gap-2">
             <Avatar fallback="S" size="sm" />
-            <span className="truncate text-sm font-medium text-slate-700 dark:text-zinc-200">{t.user}</span>
+            <span className="truncate text-sm font-medium text-fg-soft">{t.user}</span>
           </div>
         }
         sections={[

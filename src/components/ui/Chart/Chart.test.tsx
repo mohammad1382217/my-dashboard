@@ -17,7 +17,8 @@ describe('Chart', () => {
 
   it('draws one bar per point in bar mode', () => {
     const { container } = render(<Chart data={data} type="bar" />)
-    expect(container.querySelectorAll('rect')).toHaveLength(3)
+    // Filled rects are the bars; transparent rects are the hover hit-areas.
+    expect(container.querySelectorAll('rect:not([fill="transparent"])')).toHaveLength(3)
   })
 
   it('draws a polyline in line mode', () => {

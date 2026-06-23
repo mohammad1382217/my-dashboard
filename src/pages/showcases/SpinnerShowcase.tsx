@@ -18,7 +18,7 @@ export function SpinnerShowcase() {
         <Spinner size="md" label={t.loading} />
         <Spinner size="lg" label={t.loading} />
       </div>
-      <div className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-zinc-400">
+      <div className="inline-flex items-center gap-2 text-sm text-muted">
         <Spinner size="sm" label={t.loading} />
         <span>{t.loading}</span>
       </div>

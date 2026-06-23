@@ -23,18 +23,18 @@ export function HoverCardShowcase() {
   const t = STRINGS[lang]
 
   return (
-    <div className="text-sm text-slate-600 dark:text-zinc-400">
+    <div className="text-sm text-muted">
       <HoverCard
         trigger={
-          <button className="font-medium text-indigo-600 underline-offset-2 hover:underline dark:text-indigo-400">{t.handle}</button>
+          <button className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">{t.handle}</button>
         }
       >
         <div className="flex gap-3">
           <Avatar fallback="AL" size="lg" />
           <div className="flex flex-col gap-1">
-            <p className="font-semibold text-slate-900 dark:text-zinc-100">{t.name}</p>
-            <p className="text-xs text-slate-500 dark:text-zinc-400">{t.bio}</p>
-            <p className="text-xs text-slate-400 dark:text-zinc-500">{t.joined}</p>
+            <p className="font-semibold text-fg">{t.name}</p>
+            <p className="text-xs text-muted">{t.bio}</p>
+            <p className="text-xs text-faint">{t.joined}</p>
           </div>
         </div>
       </HoverCard>

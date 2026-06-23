@@ -21,7 +21,7 @@ export function LabelShowcase() {
         <Input id="label-demo-email" type="email" placeholder={t.placeholder} />
       </div>
       <div className="flex items-center gap-2">
-        <input id="label-demo-terms" type="checkbox" className="peer size-4 accent-indigo-600" />
+        <input id="label-demo-terms" type="checkbox" className="peer size-4 accent-primary-600" />
         <Label htmlFor="label-demo-terms">{t.terms}</Label>
       </div>
     </div>

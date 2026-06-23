@@ -137,7 +137,11 @@ export function AccordionShowcase() {
   ]
 
   return (
-    <div className="grid gap-8">
+    // DEFINITE width: the live-preview frame centers content, so its grid column is an
+    // `auto` (content-sized) track. A percentage width (w-full/max-w-*) would resolve against
+    // that content-sized track and still jitter as panels open/close — only a fixed width
+    // pins the column, keeping the accordion's width constant across toggles.
+    <div className="grid w-64 gap-8 sm:w-96">
       {/* Single, collapsible (uncontrolled) */}
       <div className="grid gap-3">
         <span className="text-xs font-medium text-neutral-400">{t.secSingleUncontrolled}</span>

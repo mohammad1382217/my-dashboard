@@ -822,17 +822,26 @@ toast.dismiss(id)`,
       {
         label: U.basic,
         code: `const [open, setOpen] = useState(false)
+const [sort, setSort] = useState('newest')
 
-<Button onClick={() => setOpen(true)}>Open</Button>
+<Button onClick={() => setOpen(true)}>Open sheet</Button>
 
-<BottomSheet open={open} onOpenChange={setOpen} title="Sort by">
-  <p>Sheet content…</p>
-</BottomSheet>`,
-      },
-      {
-        label: { fa: 'با فوتر', en: 'With footer' },
-        code: `<BottomSheet open={open} onOpenChange={setOpen} title="Filters" footer={<Button onClick={() => setOpen(false)}>Apply</Button>}>
-  …
+<BottomSheet
+  open={open}
+  onOpenChange={setOpen}
+  title="Sort by"
+  description="Pick one option."
+  footer={<Button onClick={() => setOpen(false)}>Apply</Button>}
+>
+  <RadioGroup
+    value={sort}
+    onValueChange={setSort}
+    options={[
+      { value: 'newest', label: 'Newest' },
+      { value: 'cheapest', label: 'Cheapest' },
+      { value: 'popular', label: 'Most popular' },
+    ]}
+  />
 </BottomSheet>`,
       },
       {

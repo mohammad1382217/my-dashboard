@@ -15,10 +15,10 @@ export function ScrollAreaShowcase() {
 
   return (
     <ScrollArea className="h-56 w-56 rounded-lg border border-slate-200 p-4 dark:border-zinc-800">
-      <p className="mb-2 text-sm font-medium text-slate-900 dark:text-zinc-100">{t.title}</p>
+      <p className="mb-2 text-sm font-medium text-fg">{t.title}</p>
       {tags.map((tag, index) => (
         <div key={tag}>
-          <div className="py-1.5 text-sm text-slate-600 dark:text-zinc-400">{tag}</div>
+          <div className="py-1.5 text-sm text-muted">{tag}</div>
           {index < tags.length - 1 ? <Separator /> : null}
         </div>
       ))}

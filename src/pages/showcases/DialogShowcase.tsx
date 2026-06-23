@@ -53,7 +53,7 @@ export function DialogShowcase() {
           </>
         }
       >
-        <p className="text-sm text-slate-600 dark:text-zinc-400">{t.body}</p>
+        <p className="text-sm text-muted">{t.body}</p>
       </Dialog>
     </div>
   )

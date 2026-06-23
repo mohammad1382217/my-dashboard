@@ -42,7 +42,7 @@ export function TooltipShowcase() {
           <Button variant="outline">{t.right}</Button>
         </Tooltip>
       </div>
-      <p className="text-sm text-slate-500 dark:text-zinc-400">{t.hint}</p>
+      <p className="text-sm text-muted">{t.hint}</p>
     </div>
   )
 }

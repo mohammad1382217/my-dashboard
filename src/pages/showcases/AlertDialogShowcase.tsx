@@ -69,7 +69,7 @@ export function AlertDialogShowcase() {
         onConfirm={() => setResult(config.done)}
         onCancel={() => setResult(t.cancelled)}
       />
-      {result ? <span className="text-sm text-slate-500 dark:text-zinc-400">{result}</span> : null}
+      {result ? <span className="text-sm text-muted">{result}</span> : null}
     </div>
   )
 }

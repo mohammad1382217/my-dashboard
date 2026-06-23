@@ -25,8 +25,8 @@ export function ComboboxShowcase() {
   return (
     <div className="flex w-full max-w-xs flex-col gap-3">
       <Combobox options={options} value={value} onChange={setValue} placeholder={t.placeholder} emptyText={t.empty} />
-      <span className="text-sm text-slate-500 dark:text-zinc-400">
-        {t.picked} <span className="font-medium text-slate-700 dark:text-zinc-200">{value ?? t.none}</span>
+      <span className="text-sm text-muted">
+        {t.picked} <span className="font-medium text-fg-soft">{value ?? t.none}</span>
       </span>
     </div>
   )

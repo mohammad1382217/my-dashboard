@@ -17,7 +17,7 @@ export function PaginationShowcase() {
   return (
     <div className="flex flex-col items-center gap-3">
       <Pagination page={page} count={count} onPageChange={setPage} label={t.label} prevLabel={t.prev} nextLabel={t.next} />
-      <span className="text-sm text-slate-500 dark:text-zinc-400">
+      <span className="text-sm text-muted">
         {t.page} {page} {t.of} {count}
       </span>
     </div>

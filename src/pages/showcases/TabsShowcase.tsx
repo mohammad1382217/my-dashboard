@@ -40,7 +40,7 @@ const STRINGS = {
   },
 } as const
 
-const bodyClass = 'leading-relaxed text-slate-600 dark:text-zinc-400'
+const bodyClass = 'leading-relaxed text-muted'
 
 /** Live gallery of the Tabs states, rendered inside the dashboard preview panel. */
 export function TabsShowcase() {

@@ -35,7 +35,7 @@ function addDays(d: Date, n: number) {
 }
 
 const navBtn =
-  'inline-flex size-8 items-center justify-center rounded-md text-slate-500 outline-none transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:text-zinc-400 dark:hover:bg-zinc-800'
+  'inline-flex size-8 items-center justify-center rounded-md text-slate-500 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-primary-500/30 active:scale-[0.98] dark:text-zinc-400 dark:hover:bg-zinc-800'
 
 /**
  * A Gregorian month calendar with single-date selection. Controlled via `value`
@@ -148,7 +148,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
   return (
     <div
       ref={ref}
-      className={twMerge('inline-block w-fit rounded-xl border border-slate-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900', className)}
+      className={twMerge('inline-block w-fit rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none', className)}
       {...props}
     >
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -157,7 +157,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <div aria-live="polite" className="text-sm font-medium text-slate-900 dark:text-zinc-100">
+        <div aria-live="polite" className="text-sm font-medium text-fg">
           {titleFmt.format(month)}
         </div>
         <button type="button" aria-label="Next month" onClick={() => goToMonth(addMonths(month, 1))} className={navBtn}>
@@ -171,7 +171,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
         <thead>
           <tr>
             {weekdays.map((w, i) => (
-              <th key={i} scope="col" className="size-9 text-center text-xs font-normal text-slate-400 dark:text-zinc-500">
+              <th key={i} scope="col" className="size-9 text-center text-xs font-normal text-faint">
                 {w}
               </th>
             ))}
@@ -198,9 +198,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                       onClick={() => select(day)}
                       onKeyDown={(event) => onDayKeyDown(event, day)}
                       className={twMerge(
-                        'inline-flex size-8 items-center justify-center rounded-md text-sm text-slate-700 outline-none transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500/40 disabled:pointer-events-none disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800',
-                        isToday && !isSelected ? 'font-semibold text-indigo-600 dark:text-indigo-400' : null,
-                        isSelected ? 'bg-indigo-600 text-white hover:bg-indigo-600 dark:bg-indigo-500 dark:text-white' : null,
+                        'inline-flex size-8 items-center justify-center rounded-md text-sm text-slate-700 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-primary-500/40 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-30 dark:text-zinc-300 dark:hover:bg-zinc-800',
+                        isToday && !isSelected ? 'font-semibold text-primary-600 dark:text-primary-400' : null,
+                        isSelected ? 'bg-primary-600 text-white hover:bg-primary-600 dark:bg-primary-500 dark:text-white' : null,
                       )}
                     >
                       {day.getDate()}

@@ -81,7 +81,7 @@ const labelTextSizeClasses: Record<RadioSize, string> = {
 // selection stays native; we mirror its state with peer-* utilities. Only transform/opacity
 // transitions are used so the dot + ring animate on old Chrome/Android.
 const controlBase =
-  'pointer-events-none relative flex shrink-0 items-center justify-center rounded-full border bg-white transition-colors dark:bg-zinc-900 ' +
+  'pointer-events-none relative flex shrink-0 items-center justify-center rounded-full border bg-white transition-[color,background-color,border-color,box-shadow] dark:bg-zinc-900 ' +
   "after:rounded-full after:bg-white after:transition-transform after:duration-150 after:ease-out after:content-[''] after:scale-0 peer-checked:after:scale-100 " +
   'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1 peer-disabled:opacity-60'
 
@@ -140,7 +140,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
 
   const controlState = hasError
     ? 'border-red-500 peer-checked:border-red-600 peer-checked:bg-red-600 peer-focus-visible:ring-red-500/40'
-    : 'border-slate-300 peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-focus-visible:ring-indigo-500/40 dark:border-zinc-600'
+    : 'border-slate-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-focus-visible:ring-primary-500/40 dark:border-zinc-600'
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const next = event.target.value
@@ -162,7 +162,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
       {...rest}
     >
       {label ? (
-        <legend id={legendId} className="mb-1 p-0 text-sm font-medium text-slate-700 dark:text-zinc-300">
+        <legend id={legendId} className="mb-1 p-0 text-sm font-medium text-fg-soft">
           {label}
           {required ? <span className="ms-0.5 text-red-500">*</span> : null}
         </legend>
@@ -209,13 +209,13 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
                   {option.label ? (
                     <label
                       htmlFor={optionId}
-                      className={twMerge('leading-tight font-medium text-slate-900 dark:text-zinc-100', cursorClass, labelTextSizeClasses[size])}
+                      className={twMerge('leading-tight font-medium text-fg', cursorClass, labelTextSizeClasses[size])}
                     >
                       {option.label}
                     </label>
                   ) : null}
                   {option.description ? (
-                    <span id={descriptionId} className="text-sm text-slate-500 dark:text-zinc-400">
+                    <span id={descriptionId} className="text-sm text-muted">
                       {option.description}
                     </span>
                   ) : null}
@@ -231,7 +231,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
           {errorMessage}
         </p>
       ) : helperText ? (
-        <p id={helperId} className="text-sm text-slate-500 dark:text-zinc-400">
+        <p id={helperId} className="text-sm text-muted">
           {helperText}
         </p>
       ) : null}

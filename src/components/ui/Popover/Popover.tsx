@@ -21,7 +21,7 @@ export interface PopoverProps {
 type Position = { top: number; left: number }
 
 const triggerClass =
-  'inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 outline-none transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+  'inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-primary-500/30 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
 
 /**
  * A click-triggered floating panel rendered in a portal (so it escapes clipped

@@ -27,14 +27,14 @@ export function ResizableShowcase() {
       defaultSize={35}
       first={
         <div className="h-full bg-slate-50 p-4 dark:bg-zinc-800/40">
-          <p className="text-sm font-medium text-slate-900 dark:text-zinc-100">{t.nav}</p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">{t.navBody}</p>
+          <p className="text-sm font-medium text-fg">{t.nav}</p>
+          <p className="mt-1 text-xs text-muted">{t.navBody}</p>
         </div>
       }
       second={
         <div className="h-full p-4">
-          <p className="text-sm font-medium text-slate-900 dark:text-zinc-100">{t.content}</p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">{t.contentBody}</p>
+          <p className="text-sm font-medium text-fg">{t.content}</p>
+          <p className="mt-1 text-xs text-muted">{t.contentBody}</p>
         </div>
       }
     />

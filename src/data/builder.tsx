@@ -240,6 +240,11 @@ function framedCode(jsx: string, cls: string): string {
   return `<div className="${cls}">\n  ${jsx.split('\n').join('\n  ')}\n</div>`
 }
 
+/** A `className="…"` attribute (with a leading space) for the inspector classes, or '' when empty. */
+function clsAttr(cls: string): string {
+  return cls ? ` className="${cls}"` : ''
+}
+
 const CHART_DATA = [
   { label: 'Jan', value: 12 },
   { label: 'Feb', value: 19 },
@@ -250,7 +255,7 @@ const CHART_DATA = [
 /** Pagination is always controlled, so the preview needs real page state to be interactive. */
 function PaginationDemo({ style }: { style: CSSProperties }) {
   const [page, setPage] = useState(2)
-  return frame(style, <Pagination page={page} count={5} onPageChange={setPage} />)
+  return <Pagination page={page} count={5} onPageChange={setPage} style={style} />
 }
 
 export const BUILDERS: BuilderEntry[] = [
@@ -470,93 +475,79 @@ export const BUILDERS: BuilderEntry[] = [
       { prop: 'label', kind: 'text', label: { fa: 'لیبل', en: 'Label' }, default: 'Bio' },
       { prop: 'placeholder', kind: 'text', label: { fa: 'پلیس‌هولدر', en: 'Placeholder' }, default: 'Tell us…' },
     ],
-    render: (v, style) => frame(style, <Textarea label={s(v.label)} placeholder={s(v.placeholder)} className="w-72" />),
-    toCode: (v, sc) => framedCode(`<Textarea label="${s(v.label)}" placeholder="${s(v.placeholder)}" />`, sc),
+    render: (v, style) => <Textarea label={s(v.label)} placeholder={s(v.placeholder)} className="w-72" style={style} />,
+    toCode: (v, sc) => `<Textarea label="${s(v.label)}" placeholder="${s(v.placeholder)}"${clsAttr(sc)} />`,
   },
   {
     id: 'select',
     code: 'Select',
     controls: [{ prop: 'label', kind: 'text', label: { fa: 'لیبل', en: 'Label' }, default: 'Country' }],
-    render: (v, style) =>
-      frame(
-        style,
-        <div className="w-56">
-          <Select label={s(v.label)} defaultValue="us">
-            <option value="us">United States</option>
-            <option value="de">Germany</option>
-          </Select>
-        </div>,
-      ),
-    toCode: (v, sc) => framedCode(`<Select label="${s(v.label)}">\n  <option value="us">United States</option>\n  <option value="de">Germany</option>\n</Select>`, sc),
+    render: (v, style) => (
+      <div className="w-56">
+        <Select label={s(v.label)} defaultValue="us" style={style}>
+          <option value="us">United States</option>
+          <option value="de">Germany</option>
+        </Select>
+      </div>
+    ),
+    toCode: (v, sc) => `<Select label="${s(v.label)}"${clsAttr(sc)}>\n  <option value="us">United States</option>\n  <option value="de">Germany</option>\n</Select>`,
   },
   {
     id: 'skeleton',
     code: 'Skeleton',
     controls: [],
-    render: (_v, style) => frame(style, <Skeleton className="h-6 w-48" />),
-    toCode: (_v, sc) => framedCode(`<Skeleton className="h-6 w-48" />`, sc),
+    render: (_v, style) => <Skeleton className="h-6 w-48" style={style} />,
+    toCode: (_v, sc) => `<Skeleton className="${sc ? `h-6 w-48 ${sc}` : 'h-6 w-48'}" />`,
   },
   {
     id: 'label',
     code: 'Label',
     controls: [{ prop: 'children', kind: 'text', label: { fa: 'متن', en: 'Text' }, default: 'Email address' }],
-    render: (v, style) => frame(style, <Label>{s(v.children)}</Label>),
-    toCode: (v, sc) => framedCode(`<Label>${s(v.children)}</Label>`, sc),
+    render: (v, style) => <Label style={style}>{s(v.children)}</Label>,
+    toCode: (v, sc) => `<Label${clsAttr(sc)}>${s(v.children)}</Label>`,
   },
   {
     id: 'aspect-ratio',
     code: 'AspectRatio',
     controls: [],
-    render: (_v, style) =>
-      frame(
-        style,
-        <div className="w-64">
-          <AspectRatio ratio={16 / 9}>
-            <div className="grid h-full place-items-center bg-indigo-500 text-sm text-white">16 : 9</div>
-          </AspectRatio>
-        </div>,
-      ),
-    toCode: (_v, sc) => framedCode(`<AspectRatio ratio={16 / 9}>\n  <img className="size-full object-cover" src="/cover.jpg" alt="" />\n</AspectRatio>`, sc),
+    render: (_v, style) => (
+      <div className="w-64">
+        <AspectRatio ratio={16 / 9} style={style}>
+          <div className="grid h-full place-items-center bg-indigo-500 text-sm text-white">16 : 9</div>
+        </AspectRatio>
+      </div>
+    ),
+    toCode: (_v, sc) => `<AspectRatio ratio={16 / 9}${clsAttr(sc)}>\n  <img className="size-full object-cover" src="/cover.jpg" alt="" />\n</AspectRatio>`,
   },
   {
     id: 'accordion',
     code: 'Accordion',
     controls: [{ prop: 'title', kind: 'text', label: { fa: 'عنوان', en: 'Title' }, default: 'Is it accessible?' }],
-    render: (v, style) =>
-      frame(
-        style,
-        <div className="w-72">
-          <Accordion type="single" defaultOpen="a" items={[{ id: 'a', title: s(v.title), content: 'Yes — it follows WAI-ARIA.' }]} />
-        </div>,
-      ),
-    toCode: (v, sc) => framedCode(`<Accordion\n  type="single"\n  items={[{ id: 'a', title: '${s(v.title)}', content: '…' }]}\n/>`, sc),
+    render: (v, style) => (
+      <Accordion className="w-72" type="single" defaultOpen="a" items={[{ id: 'a', title: s(v.title), content: 'Yes — it follows WAI-ARIA.' }]} style={style} />
+    ),
+    toCode: (v, sc) => `<Accordion\n  type="single"\n  items={[{ id: 'a', title: '${s(v.title)}', content: '…' }]}${clsAttr(sc)}\n/>`,
   },
   {
     id: 'radio-group',
     code: 'RadioGroup',
     controls: [{ prop: 'label', kind: 'text', label: { fa: 'لیبل', en: 'Label' }, default: 'Billing plan' }],
-    render: (v, style) =>
-      frame(
-        style,
-        <RadioGroup label={s(v.label)} defaultValue="pro" options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }]} />,
-      ),
-    toCode: (v, sc) => framedCode(`<RadioGroup\n  label="${s(v.label)}"\n  defaultValue="pro"\n  options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }]}\n/>`, sc),
+    render: (v, style) => (
+      <RadioGroup label={s(v.label)} defaultValue="pro" options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }]} style={style} />
+    ),
+    toCode: (v, sc) => `<RadioGroup\n  label="${s(v.label)}"\n  defaultValue="pro"\n  options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }]}${clsAttr(sc)}\n/>`,
   },
   {
     id: 'form',
     code: 'Form',
     controls: [],
-    render: (_v, style) =>
-      frame(
-        style,
-        <div className="w-64">
-          <Form onSubmit={() => {}}>
-            <Input name="email" label="Email" type="email" />
-            <Button type="submit">Submit</Button>
-          </Form>
-        </div>,
-      ),
-    toCode: (_v, sc) => framedCode(`<Form onSubmit={(values) => console.log(values)}>\n  <Input name="email" label="Email" type="email" />\n  <Button type="submit">Submit</Button>\n</Form>`, sc),
+    render: (_v, style) => (
+      <Form className="w-64" onSubmit={() => {}} style={style}>
+        <Input name="email" label="Email" type="email" />
+        <Button type="submit">Submit</Button>
+      </Form>
+    ),
+    toCode: (_v, sc) => `<Form onSubmit={(values) => console.log(values)}${clsAttr(sc)}>\n  <Input name="email" label="Email" type="email" />\n  <Button type="submit">Submit</Button>\n</Form>`,
   },
   {
     id: 'input-otp',
@@ -592,16 +583,12 @@ export const BUILDERS: BuilderEntry[] = [
       { prop: 'title', kind: 'text', label: { fa: 'عنوان', en: 'Title' }, default: 'Pro plan' },
       { prop: 'description', kind: 'text', label: { fa: 'توضیح', en: 'Description' }, default: 'Billed monthly' },
     ],
-    render: (v, style) =>
-      frame(
-        style,
-        <div className="w-64">
-          <Card title={s(v.title)} description={s(v.description)}>
-            <p>Access to every feature.</p>
-          </Card>
-        </div>,
-      ),
-    toCode: (v, sc) => framedCode(`<Card title="${s(v.title)}" description="${s(v.description)}">\n  <p>Access to every feature.</p>\n</Card>`, sc),
+    render: (v, style) => (
+      <Card className="w-64" title={s(v.title)} description={s(v.description)} style={style}>
+        <p>Access to every feature.</p>
+      </Card>
+    ),
+    toCode: (v, sc) => `<Card title="${s(v.title)}" description="${s(v.description)}"${clsAttr(sc)}>\n  <p>Access to every feature.</p>\n</Card>`,
   },
   {
     id: 'carousel',
@@ -625,38 +612,41 @@ export const BUILDERS: BuilderEntry[] = [
     id: 'breadcrumb',
     code: 'Breadcrumb',
     controls: [],
-    render: (_v, style) => frame(style, <Breadcrumb items={[{ label: 'Home', href: '#' }, { label: 'Library', href: '#' }, { label: 'Data' }]} />),
-    toCode: (_v, sc) => framedCode(`<Breadcrumb items={[\n  { label: 'Home', href: '/' },\n  { label: 'Library', href: '/library' },\n  { label: 'Data' },\n]} />`, sc),
+    render: (_v, style) => <Breadcrumb items={[{ label: 'Home', href: '#' }, { label: 'Library', href: '#' }, { label: 'Data' }]} style={style} />,
+    toCode: (_v, sc) => `<Breadcrumb${clsAttr(sc)} items={[\n  { label: 'Home', href: '/' },\n  { label: 'Library', href: '/library' },\n  { label: 'Data' },\n]} />`,
   },
   {
     id: 'toggle-group',
     code: 'ToggleGroup',
     controls: [],
-    render: (_v, style) =>
-      frame(style, <ToggleGroup defaultValue="center" items={[{ value: 'left', label: 'Left' }, { value: 'center', label: 'Center' }, { value: 'right', label: 'Right' }]} />),
-    toCode: (_v, sc) => framedCode(`<ToggleGroup\n  type="single"\n  defaultValue="center"\n  items={[\n    { value: 'left', label: 'Left' },\n    { value: 'center', label: 'Center' },\n    { value: 'right', label: 'Right' },\n  ]}\n/>`, sc),
+    render: (_v, style) => (
+      <ToggleGroup defaultValue="center" items={[{ value: 'left', label: 'Left' }, { value: 'center', label: 'Center' }, { value: 'right', label: 'Right' }]} style={style} />
+    ),
+    toCode: (_v, sc) => `<ToggleGroup\n  type="single"\n  defaultValue="center"\n  items={[\n    { value: 'left', label: 'Left' },\n    { value: 'center', label: 'Center' },\n    { value: 'right', label: 'Right' },\n  ]}${clsAttr(sc)}\n/>`,
   },
   {
     id: 'button-group',
     code: 'ButtonGroup',
     controls: [],
-    render: (_v, style) =>
-      frame(
-        style,
-        <ButtonGroup>
-          <Button variant="outline">Day</Button>
-          <Button variant="outline">Week</Button>
-          <Button variant="outline">Month</Button>
-        </ButtonGroup>,
-      ),
-    toCode: (_v, sc) => framedCode(`<ButtonGroup>\n  <Button variant="outline">Day</Button>\n  <Button variant="outline">Week</Button>\n  <Button variant="outline">Month</Button>\n</ButtonGroup>`, sc),
+    render: (_v, style) => (
+      <ButtonGroup style={style}>
+        <Button variant="outline">Day</Button>
+        <Button variant="outline">Week</Button>
+        <Button variant="outline">Month</Button>
+      </ButtonGroup>
+    ),
+    toCode: (_v, sc) => `<ButtonGroup${clsAttr(sc)}>\n  <Button variant="outline">Day</Button>\n  <Button variant="outline">Week</Button>\n  <Button variant="outline">Month</Button>\n</ButtonGroup>`,
   },
   {
     id: 'input-group',
     code: 'InputGroup',
     controls: [{ prop: 'placeholder', kind: 'text', label: { fa: 'پلیس‌هولدر', en: 'Placeholder' }, default: 'Search…' }],
-    render: (v, style) => frame(style, <div className="w-64"><InputGroup leading={<Icon name="search" size={16} />} placeholder={s(v.placeholder)} /></div>),
-    toCode: (v, sc) => framedCode(`<InputGroup leading={<Icon name="search" />} placeholder="${s(v.placeholder)}" />`, sc),
+    render: (v, style) => (
+      <div className="w-64">
+        <InputGroup leading={<Icon name="search" size={16} />} placeholder={s(v.placeholder)} style={style} />
+      </div>
+    ),
+    toCode: (v, sc) => `<InputGroup leading={<Icon name="search" />} placeholder="${s(v.placeholder)}"${clsAttr(sc)} />`,
   },
   {
     id: 'item',
@@ -665,8 +655,8 @@ export const BUILDERS: BuilderEntry[] = [
       { prop: 'title', kind: 'text', label: { fa: 'عنوان', en: 'Title' }, default: 'Ada Lovelace' },
       { prop: 'description', kind: 'text', label: { fa: 'توضیح', en: 'Description' }, default: 'Engineer' },
     ],
-    render: (v, style) => frame(style, <div className="w-64"><Item title={s(v.title)} description={s(v.description)} /></div>),
-    toCode: (v, sc) => framedCode(`<Item title="${s(v.title)}" description="${s(v.description)}" />`, sc),
+    render: (v, style) => <Item className="w-64" title={s(v.title)} description={s(v.description)} style={style} />,
+    toCode: (v, sc) => `<Item title="${s(v.title)}" description="${s(v.description)}"${clsAttr(sc)} />`,
   },
   {
     id: 'field',
@@ -675,66 +665,54 @@ export const BUILDERS: BuilderEntry[] = [
       { prop: 'label', kind: 'text', label: { fa: 'لیبل', en: 'Label' }, default: 'Email' },
       { prop: 'error', kind: 'text', label: { fa: 'خطا', en: 'Error' }, default: '' },
     ],
-    render: (v, style) =>
-      frame(
-        style,
-        <div className="w-64">
-          <Field label={s(v.label)} error={s(v.error) || undefined}>
-            <Input type="email" />
-          </Field>
-        </div>,
-      ),
-    toCode: (v, sc) => framedCode(`<Field label="${s(v.label)}"${s(v.error) ? ` error="${s(v.error)}"` : ''}>\n  <Input type="email" />\n</Field>`, sc),
+    render: (v, style) => (
+      <Field className="w-64" label={s(v.label)} error={s(v.error) || undefined} style={style}>
+        <Input type="email" />
+      </Field>
+    ),
+    toCode: (v, sc) => `<Field label="${s(v.label)}"${s(v.error) ? ` error="${s(v.error)}"` : ''}${clsAttr(sc)}>\n  <Input type="email" />\n</Field>`,
   },
   {
     id: 'pagination',
     code: 'Pagination',
     controls: [],
     render: (_v, style) => <PaginationDemo style={style} />,
-    toCode: (_v, sc) => framedCode(`<Pagination page={page} count={12} onPageChange={setPage} />`, sc),
+    toCode: (_v, sc) => `<Pagination page={page} count={12} onPageChange={setPage}${clsAttr(sc)} />`,
   },
   {
     id: 'table',
     code: 'Table',
     controls: [],
-    render: (_v, style) =>
-      frame(
-        style,
-        <div className="w-80">
-          <Table columns={[{ key: 'name', header: 'Name' }, { key: 'role', header: 'Role' }]} data={[{ name: 'Ada', role: 'Engineer' }, { name: 'Linus', role: 'Maintainer' }]} />
-        </div>,
-      ),
-    toCode: (_v, sc) => framedCode(`<Table\n  columns={[{ key: 'name', header: 'Name' }, { key: 'role', header: 'Role' }]}\n  data={rows}\n/>`, sc),
+    render: (_v, style) => (
+      <div className="w-80">
+        <Table columns={[{ key: 'name', header: 'Name' }, { key: 'role', header: 'Role' }]} data={[{ name: 'Ada', role: 'Engineer' }, { name: 'Linus', role: 'Maintainer' }]} style={style} />
+      </div>
+    ),
+    toCode: (_v, sc) => `<Table\n  columns={[{ key: 'name', header: 'Name' }, { key: 'role', header: 'Role' }]}\n  data={rows}${clsAttr(sc)}\n/>`,
   },
   {
     id: 'scroll-area',
     code: 'ScrollArea',
     controls: [],
-    render: (_v, style) =>
-      frame(
-        style,
-        <ScrollArea className="h-32 w-56 rounded-lg border border-slate-200 p-3 dark:border-zinc-800">
-          <p className="text-sm leading-relaxed text-slate-600 dark:text-zinc-400">
-            Scrollable content. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-        </ScrollArea>,
-      ),
-    toCode: (_v, sc) => framedCode(`<ScrollArea className="h-56">\n  {/* long content */}\n</ScrollArea>`, sc),
+    render: (_v, style) => (
+      <ScrollArea className="h-32 w-56 rounded-lg border border-slate-200 p-3 dark:border-zinc-800" style={style}>
+        <p className="text-sm leading-relaxed text-slate-600 dark:text-zinc-400">
+          Scrollable content. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+      </ScrollArea>
+    ),
+    toCode: (_v, sc) => `<ScrollArea className="${sc ? `h-56 ${sc}` : 'h-56'}">\n  {/* long content */}\n</ScrollArea>`,
   },
   {
     id: 'collapsible',
     code: 'Collapsible',
     controls: [{ prop: 'trigger', kind: 'text', label: { fa: 'تریگر', en: 'Trigger' }, default: 'Order details' }],
-    render: (v, style) =>
-      frame(
-        style,
-        <div className="w-64">
-          <Collapsible trigger={s(v.trigger)} defaultOpen>
-            Shipped on June 4.
-          </Collapsible>
-        </div>,
-      ),
-    toCode: (v, sc) => framedCode(`<Collapsible trigger="${s(v.trigger)}" defaultOpen>\n  Shipped on June 4.\n</Collapsible>`, sc),
+    render: (v, style) => (
+      <Collapsible className="w-64" trigger={s(v.trigger)} defaultOpen style={style}>
+        Shipped on June 4.
+      </Collapsible>
+    ),
+    toCode: (v, sc) => `<Collapsible trigger="${s(v.trigger)}" defaultOpen${clsAttr(sc)}>\n  Shipped on June 4.\n</Collapsible>`,
   },
   {
     id: 'popover',
@@ -786,8 +764,8 @@ export const BUILDERS: BuilderEntry[] = [
     id: 'calendar',
     code: 'Calendar',
     controls: [],
-    render: (_v, style) => frame(style, <Calendar />),
-    toCode: (_v, sc) => framedCode(`<Calendar value={date} onChange={setDate} />`, sc),
+    render: (_v, style) => <Calendar style={style} />,
+    toCode: (_v, sc) => `<Calendar value={date} onChange={setDate}${clsAttr(sc)} />`,
   },
   {
     id: 'combobox',
@@ -877,8 +855,8 @@ export const BUILDERS: BuilderEntry[] = [
     id: 'chart',
     code: 'Chart',
     controls: [{ prop: 'type', kind: 'select', label: { fa: 'نوع', en: 'Type' }, options: ['bar', 'line'], default: 'bar' }],
-    render: (v, style) => frame(style, <div className="w-80"><Chart type={s(v.type) as 'bar' | 'line'} data={CHART_DATA} height={180} /></div>),
-    toCode: (v, sc) => framedCode(`<Chart\n  type="${s(v.type)}"\n  data={[{ label: 'Jan', value: 12 }, { label: 'Feb', value: 19 }]}\n/>`, sc),
+    render: (v, style) => <Chart className="w-80" type={s(v.type) as 'bar' | 'line'} data={CHART_DATA} height={180} style={style} />,
+    toCode: (v, sc) => `<Chart\n  type="${s(v.type)}"\n  data={[{ label: 'Jan', value: 12 }, { label: 'Feb', value: 19 }]}${clsAttr(sc)}\n/>`,
   },
   {
     id: 'datepicker-jalali',

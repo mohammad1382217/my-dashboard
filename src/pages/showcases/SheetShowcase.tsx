@@ -48,7 +48,7 @@ export function SheetShowcase() {
         </Button>
       ))}
       <Sheet open={side !== null} onOpenChange={(open) => !open && setSide(null)} side={side ?? 'end'} title={t.title} description={t.desc} closeLabel={t.close}>
-        <p className="text-sm text-slate-600 dark:text-zinc-400">{t.body}</p>
+        <p className="text-sm text-muted">{t.body}</p>
       </Sheet>
     </div>
   )

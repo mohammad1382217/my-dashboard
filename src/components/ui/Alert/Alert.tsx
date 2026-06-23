@@ -51,7 +51,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
     <div
       ref={ref}
       role={variant === 'error' || variant === 'warning' ? 'alert' : 'status'}
-      className={twMerge('flex gap-3 rounded-lg border p-4 text-sm', variantClasses[variant], className)}
+      className={twMerge('flex gap-3 rounded-lg border p-4 text-sm shadow-sm dark:shadow-none', variantClasses[variant], className)}
       {...props}
     >
       {showIcon ? (

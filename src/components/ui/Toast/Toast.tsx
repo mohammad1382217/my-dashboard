@@ -71,10 +71,10 @@ const variantClasses: Record<ToastType, ToastVariant> = {
   },
   default: {
     card: 'border-slate-200 bg-slate-100 dark:border-zinc-700 dark:bg-zinc-800',
-    icon: 'text-slate-500 dark:text-zinc-400',
-    title: 'text-slate-900 dark:text-zinc-100',
-    desc: 'text-slate-600 dark:text-zinc-400',
-    close: 'text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:text-zinc-400 dark:hover:bg-zinc-700',
+    icon: 'text-muted',
+    title: 'text-fg',
+    desc: 'text-muted',
+    close: 'text-slate-500 hover:bg-slate-200 hover:text-muted dark:hover:bg-zinc-700',
   },
 }
 
@@ -162,7 +162,7 @@ function ToastCard({
       role={toast.type === 'error' ? 'alert' : 'status'}
       aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
       className={twMerge(
-        'pointer-events-auto flex items-start gap-3 rounded-lg border p-3 shadow-lg transition-all duration-200 ease-out motion-reduce:transition-none',
+        'pointer-events-auto flex items-start gap-3 rounded-lg border p-3 shadow-lg ring-1 ring-black/5 transition-all duration-200 ease-out motion-reduce:transition-none dark:ring-white/10',
         variant.card,
         shown
           ? 'opacity-100 transform-[translateY(0px)]'
@@ -182,7 +182,7 @@ function ToastCard({
         type="button"
         onClick={() => setLeaving(true)}
         aria-label="Close"
-        className={twMerge('-me-1 -mt-1 shrink-0 rounded-md p-1 transition-colors', variant.close)}
+        className={twMerge('-me-1 -mt-1 shrink-0 rounded-md p-1 outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-primary-500/40 active:scale-[0.98]', variant.close)}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18" />

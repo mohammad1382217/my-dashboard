@@ -46,7 +46,7 @@ export interface SidebarProps {
 }
 
 const itemBase =
-  'group/item flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500/30'
+  'group/item flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-primary-500/30'
 const itemIdle = 'text-slate-600 hover:bg-slate-100 dark:text-zinc-300 dark:hover:bg-zinc-800'
 const itemActive = 'bg-slate-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
 
@@ -126,7 +126,7 @@ export const Sidebar = forwardRef<HTMLElement, SidebarProps>(function Sidebar(
           onClick={toggle}
           aria-label={isCollapsed ? expandLabel : collapseLabel}
           aria-expanded={!isCollapsed}
-          className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-500 outline-none transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-500 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-primary-500/30 active:scale-[0.98] dark:text-zinc-400 dark:hover:bg-zinc-800"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={isCollapsed ? 'transform-[rotate(180deg)] rtl:transform-[rotate(0deg)]' : 'transform-[rotate(0deg)] rtl:transform-[rotate(180deg)]'}>
             <path d="m15 18-6-6 6-6" />

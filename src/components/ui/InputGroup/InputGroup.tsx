@@ -12,7 +12,7 @@ export interface InputGroupProps extends ComponentPropsWithoutRef<'input'> {
 }
 
 const wrapperBase =
-  'flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 transition-colors focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 has-[input:disabled]:cursor-not-allowed has-[input:disabled]:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100'
+  'flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 transition-[color,background-color,border-color,box-shadow] hover:border-slate-400 focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20 has-[input:disabled]:cursor-not-allowed has-[input:disabled]:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600'
 
 /**
  * An input with leading/trailing addons inside a single bordered shell. The
@@ -21,12 +21,15 @@ const wrapperBase =
  * the input, `wrapperClassName` the shell.
  */
 export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(function InputGroup(
-  { leading, trailing, wrapperClassName, className, ...props },
+  // `dir` lands on the WRAPPER (the flex shell) so it drives the addon sides — e.g. an
+  // LTR-content field (URL, number) in an RTL UI can pin `https://` left / a unit right.
+  // The borderless input inherits it.
+  { leading, trailing, wrapperClassName, className, dir, ...props },
   ref,
 ) {
   return (
-    <div className={twMerge(wrapperBase, wrapperClassName)}>
-      {leading ? <span className="shrink-0 text-slate-400 dark:text-zinc-500">{leading}</span> : null}
+    <div dir={dir} className={twMerge(wrapperBase, wrapperClassName)}>
+      {leading ? <span className="shrink-0 text-faint">{leading}</span> : null}
       <input
         ref={ref}
         className={twMerge(
@@ -35,7 +38,7 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(function
         )}
         {...props}
       />
-      {trailing ? <span className="shrink-0 text-slate-400 dark:text-zinc-500">{trailing}</span> : null}
+      {trailing ? <span className="shrink-0 text-faint">{trailing}</span> : null}
     </div>
   )
 })

@@ -3,6 +3,58 @@
 /* Manual, class-based dark mode: `dark:` utilities apply under an ancestor `.dark`. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Theme tokens. `primary` is the kit's brand/accent scale — it defaults to indigo
+   but is backed by CSS variables, so overriding --color-primary-* (in :root, a
+   theme class, or per-subtree) re-themes the whole kit's accent: focus rings,
+   active states, links, the slider fill, etc. */
+@theme {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+  --color-primary-950: #1e1b4b;
+
+  /* Semantic surface/text/border tokens — light/dark values live in :root/.dark
+     below, so utilities like `text-fg`, `bg-surface`, `border-border` adapt to the
+     theme on their own (no `dark:` needed) and are fully re-themeable. */
+  --color-fg: var(--fg);
+  --color-fg-soft: var(--fg-soft);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border-c);
+  --color-input: var(--input-c);
+}
+
+:root {
+  --fg: #0f172a; /* slate-900 */
+  --fg-soft: #334155; /* slate-700 */
+  --muted: #64748b; /* slate-500 */
+  --faint: #94a3b8; /* slate-400 */
+  --surface: #ffffff;
+  --surface-2: #f1f5f9; /* slate-100 */
+  --border-c: #e2e8f0; /* slate-200 */
+  --input-c: #cbd5e1; /* slate-300 */
+}
+
+.dark {
+  --fg: #fafafa; /* zinc-50 */
+  --fg-soft: #e4e4e7; /* zinc-200 */
+  --muted: #a1a1aa; /* zinc-400 */
+  --faint: #71717a; /* zinc-500 */
+  --surface: #18181b; /* zinc-900 */
+  --surface-2: #27272a; /* zinc-800 */
+  --border-c: #27272a; /* zinc-800 */
+  --input-c: #3f3f46; /* zinc-700 */
+}
+
 /* Estedad (استعداد) — self-hosted from /public/fonts/estedad. The `arabic` subset
    carries the Persian/Arabic glyphs; `latin` covers ASCII. `font-display: swap`
    shows the fallback immediately, then swaps Estedad in once it loads. */
@@ -41,6 +93,22 @@ html {
   font-family: 'Estedad', 'Vazirmatn', 'Vazir', 'Segoe UI', Tahoma, system-ui, sans-serif;
 }
 
+/* Clickable affordance: buttons and interactive roles get a pointer cursor by
+   default. Wrapped in :where() so it carries ZERO specificity — any Tailwind
+   utility (e.g. `cursor-not-allowed` on a disabled control) still wins. */
+:where(
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='tab'],
+  [role='menuitem'],
+  [role='menuitemradio'],
+  [role='option'],
+  [role='switch'],
+  summary
+) {
+  cursor: pointer;
+}
+
 /* Click ripple used by <Button>. Plain CSS (outside @layer) so it degrades
    gracefully on older browsers. */
 .ripple {
@@ -67,4 +135,86 @@ html {
     animation-duration: 1ms;
     opacity: 0;
   }
+}
+
+/* Prettier range slider used by <Slider>. Plain CSS (outside @layer) so the
+   vendor range pseudo-elements and the value fill work down to the old browser
+   floor. The component sets --slider-pct (0–100%) for the WebKit fill; Firefox
+   fills via the range-progress pseudo-element. RTL just flips the fill gradient. */
+.slider {
+  --slider-track: #e2e8f0; /* slate-200 */
+  --slider-fill: var(--color-primary-600);
+  --slider-ring: color-mix(in oklab, var(--color-primary-500) 25%, transparent);
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+.dark .slider {
+  --slider-track: #3f3f46; /* zinc-700 */
+  --slider-fill: var(--color-primary-500);
+}
+.slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* WebKit / Blink */
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--slider-fill) var(--slider-pct, 0%), var(--slider-track) var(--slider-pct, 0%));
+}
+[dir='rtl'] .slider::-webkit-slider-runnable-track {
+  background: linear-gradient(to left, var(--slider-fill) var(--slider-pct, 0%), var(--slider-track) var(--slider-pct, 0%));
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  margin-top: -5px; /* centre the 16px thumb on the 6px track */
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--slider-fill);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.slider:hover::-webkit-slider-thumb,
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--slider-ring);
+}
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+/* Firefox */
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--slider-track);
+}
+.slider::-moz-range-progress {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--slider-fill);
+}
+.slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--slider-fill);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.slider:hover::-moz-range-thumb,
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px var(--slider-ring);
+}
+.slider:active::-moz-range-thumb {
+  transform: scale(1.12);
 }

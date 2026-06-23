@@ -25,7 +25,7 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
     <div
       ref={ref}
       className={twMerge(
-        'flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-slate-200 p-8 text-center dark:border-zinc-800',
+        'flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-slate-200 p-8 text-center shadow-sm dark:border-zinc-800 dark:shadow-none',
         className,
       )}
       {...props}
@@ -36,8 +36,8 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
         </div>
       ) : null}
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-medium text-slate-900 dark:text-zinc-100">{title}</p>
-        {description ? <p className="text-sm text-slate-500 dark:text-zinc-400">{description}</p> : null}
+        <p className="text-sm font-medium text-fg">{title}</p>
+        {description ? <p className="text-sm text-muted">{description}</p> : null}
       </div>
       {children ? <div className="mt-1">{children}</div> : null}
     </div>

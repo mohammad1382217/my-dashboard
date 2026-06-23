@@ -38,12 +38,12 @@ function getFocusable(root: HTMLElement): HTMLElement[] {
 }
 
 const panelBase =
-  'relative z-10 flex w-full max-w-md flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 text-slate-700 shadow-xl outline-none transition-all duration-200 ease-out motion-reduce:transition-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'
+  'relative z-10 flex w-full max-w-md flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 text-slate-700 shadow-xl ring-1 ring-black/5 outline-none transition-all duration-200 ease-out motion-reduce:transition-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-white/10'
 
 const cancelBtn =
-  'inline-flex h-10 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500/30 sm:w-auto dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+  'inline-flex h-10 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition-[color,background-color,border-color,box-shadow,transform] hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-primary-500/30 active:scale-[0.98] sm:w-auto dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
 
-const confirmBtnBase = 'inline-flex h-10 w-full items-center justify-center rounded-md px-4 text-sm font-medium text-white outline-none transition-colors focus-visible:ring-2 sm:w-auto'
+const confirmBtnBase = 'inline-flex h-10 w-full items-center justify-center rounded-md px-4 text-sm font-medium text-white outline-none transition-[color,background-color,border-color,box-shadow,transform] focus-visible:ring-2 active:scale-[0.98] sm:w-auto'
 const confirmDefault = 'bg-slate-900 hover:bg-slate-800 focus-visible:ring-slate-900/30 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white'
 const confirmDestructive = 'bg-red-600 hover:bg-red-700 focus-visible:ring-red-600/30'
 
@@ -175,11 +175,11 @@ export const AlertDialog = forwardRef<HTMLDivElement, AlertDialogProps>(function
           ) : null}
 
           <div className="flex min-w-0 flex-col gap-1.5 pt-1">
-            <h2 id={titleId} className="text-base font-semibold text-slate-900 dark:text-white">
+            <h2 id={titleId} className="text-base font-semibold text-fg">
               {title}
             </h2>
             {description ? (
-              <p id={descId} className="text-sm text-slate-500 dark:text-zinc-400">
+              <p id={descId} className="text-sm text-muted">
                 {description}
               </p>
             ) : null}

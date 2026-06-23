@@ -18,10 +18,10 @@ export interface CheckboxProps extends Omit<ComponentPropsWithoutRef<'input'>, '
 // The visual box is an aria-hidden sibling of the real (transparent) input, so the
 // `peer-*` variants reach it. Animated with colour + opacity only (legacy-safe).
 const boxBase =
-  'pointer-events-none absolute inset-0 rounded border bg-white transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1 peer-disabled:opacity-60 dark:bg-zinc-900'
+  'pointer-events-none absolute inset-0 rounded border bg-white transition-[color,background-color,border-color,box-shadow,transform] peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1 peer-disabled:opacity-60 dark:bg-zinc-900'
 
 const boxNormal =
-  'border-slate-300 peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-indeterminate:border-indigo-600 peer-indeterminate:bg-indigo-600 peer-focus-visible:ring-indigo-500/40 dark:border-zinc-600'
+  'border-slate-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-indeterminate:border-primary-600 peer-indeterminate:bg-primary-600 peer-focus-visible:ring-primary-500/40 dark:border-zinc-600'
 
 const boxError =
   'border-red-500 peer-checked:border-red-600 peer-checked:bg-red-600 peer-indeterminate:border-red-600 peer-indeterminate:bg-red-600 peer-focus-visible:ring-red-500/40'
@@ -132,7 +132,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
           {errorMessage}
         </p>
       ) : helperText ? (
-        <p id={helperId} className="text-sm text-slate-500 dark:text-zinc-400">
+        <p id={helperId} className="text-sm text-muted">
           {helperText}
         </p>
       ) : null}

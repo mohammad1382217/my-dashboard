@@ -56,7 +56,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
       ) : null}
       {control}
       {description ? (
-        <p id={descId} className="text-xs text-slate-500 dark:text-zinc-400">
+        <p id={descId} className="text-xs text-muted">
           {description}
         </p>
       ) : null}

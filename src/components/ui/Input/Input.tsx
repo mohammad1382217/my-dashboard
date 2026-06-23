@@ -68,7 +68,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
   const stateClasses = hasError
     ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/30'
-    : 'border-slate-300 hover:border-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:hover:border-zinc-600 dark:focus:border-indigo-400'
+    : 'border-slate-300 hover:border-slate-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 dark:border-zinc-700 dark:hover:border-zinc-600 dark:focus:border-primary-400'
 
   const inputClassName = twMerge(
     base,
@@ -82,7 +82,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   return (
     <div className="flex flex-col gap-1.5">
       {label ? (
-        <label htmlFor={inputId} className="text-sm font-medium text-slate-700 dark:text-zinc-300">
+        <label htmlFor={inputId} className="text-sm font-medium text-fg-soft">
           {label}
           {required ? <span className="ms-0.5 text-red-500">*</span> : null}
         </label>
@@ -118,7 +118,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           {errorMessage}
         </p>
       ) : helperText ? (
-        <p id={helperId} className="text-sm text-slate-500 dark:text-zinc-400">
+        <p id={helperId} className="text-sm text-muted">
           {helperText}
         </p>
       ) : null}

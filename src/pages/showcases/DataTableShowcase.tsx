@@ -47,7 +47,7 @@ export function DataTableShowcase() {
   const t = STRINGS[lang]
 
   const columns: DataTableColumn<User>[] = [
-    { key: 'name', header: t.name, sortable: true, className: 'font-medium text-slate-900 dark:text-zinc-100' },
+    { key: 'name', header: t.name, sortable: true, className: 'font-medium text-fg' },
     { key: 'role', header: t.role, sortable: true },
     {
       key: 'status',

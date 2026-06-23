@@ -131,17 +131,17 @@ export const Command = forwardRef<HTMLInputElement, CommandProps>(function Comma
             setActiveIndex(0)
           }}
           onKeyDown={onKeyDown}
-          className="h-11 w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+          className="h-11 w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-faint dark:placeholder:text-zinc-500"
         />
       </div>
 
       <ul id={`${id}-list`} role="listbox" aria-label={label} className="max-h-72 overflow-y-auto p-1">
         {filtered.length === 0 ? (
-          <li className="px-3 py-6 text-center text-sm text-slate-400 dark:text-zinc-500">{emptyText}</li>
+          <li className="px-3 py-6 text-center text-sm text-faint">{emptyText}</li>
         ) : (
           groups.map(([group, entries]) => (
             <li key={group || '_'}>
-              {group ? <div className="px-2 pt-2 pb-1 text-xs font-medium text-slate-400 dark:text-zinc-500">{group}</div> : null}
+              {group ? <div className="px-2 pt-2 pb-1 text-xs font-medium text-faint">{group}</div> : null}
               <ul>
                 {entries.map(({ item, index }) => (
                   <li
@@ -156,14 +156,14 @@ export const Command = forwardRef<HTMLInputElement, CommandProps>(function Comma
                       run(item)
                     }}
                     className={twMerge(
-                      'flex cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-slate-700 dark:text-zinc-300',
+                      'flex cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-slate-700 transition-[color,background-color] dark:text-zinc-300',
                       index === activeIndex && !item.disabled ? 'bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-white' : null,
                       item.disabled ? 'cursor-not-allowed opacity-50' : null,
                     )}
                   >
-                    {item.icon ? <span className="shrink-0 text-slate-400 dark:text-zinc-500">{item.icon}</span> : null}
+                    {item.icon ? <span className="shrink-0 text-faint">{item.icon}</span> : null}
                     <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                    {item.shortcut ? <span className="shrink-0 text-xs text-slate-400 dark:text-zinc-500">{item.shortcut}</span> : null}
+                    {item.shortcut ? <span className="shrink-0 text-xs text-faint">{item.shortcut}</span> : null}
                   </li>
                 ))}
               </ul>
